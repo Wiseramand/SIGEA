@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UserRole } from '@sigea/shared';
 import { NavigationTab } from './types';
-import { MOCK_CASES } from './data/mockData';
+import { CasesProvider, useCases } from './context/CasesContext';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { ExecutiveDashboard } from './components/dashboard/ExecutiveDashboard';
@@ -17,13 +17,15 @@ import { TasksList } from './components/tasks/TasksList';
 import { AuditLogView } from './components/audit/AuditLogView';
 import { GlobalSearchModal } from './components/search/GlobalSearchModal';
 
-export const App: React.FC = () => {
-  const [currentRole, setCurrentRole] = React.useState<UserRole>(UserRole.PARTNER);
-  const [currentTab, setCurrentTab] = React.useState<NavigationTab>('dashboard');
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
-  const [selectedCaseId, setSelectedCaseId] = React.useState<string | null>(null);
+const AppContent: React.FC = () => {
+  const { cases } = useCases();
 
-  // When switching role, adapt tab if needed
+  const [currentRole, setCurrentRole] = useState<UserRole>(UserRole.PARTNER);
+  const [currentTab, setCurrentTab] = useState<NavigationTab>('dashboard');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+
+  // Adapt tab when switching roles
   const handleRoleChange = (newRole: UserRole) => {
     setCurrentRole(newRole);
     if (newRole === UserRole.CLIENT) {
@@ -40,7 +42,7 @@ export const App: React.FC = () => {
   };
 
   const selectedCase = selectedCaseId
-    ? MOCK_CASES.find((c) => c.id === selectedCaseId) || null
+    ? cases.find((c) => c.id === selectedCaseId) || null
     : null;
 
   return (
@@ -109,4 +111,13 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+export const App: React.FC = () => {
+  return (
+    <CasesProvider>
+      <AppContent />
+    </CasesProvider>
+  );
+};
+
 export default App;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatAOA } from '@sigea/shared';
-import { MOCK_CASES, MOCK_DEADLINES, MOCK_CLIENTS, MOCK_FEES } from '../../data/mockData';
+import { MOCK_CLIENTS } from '../../data/mockData';
+import { useCases } from '../../context/CasesContext';
 import {
   Briefcase,
   Clock,
@@ -23,12 +24,20 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
   onSelectCase,
   onNavigateTab
 }) => {
+  const { cases, deadlines, fees } = useCases();
   const [timeFilter, setTimeFilter] = React.useState<'TODAY' | 'NEXT_7_DAYS' | 'NEXT_30_DAYS'>('NEXT_7_DAYS');
 
-  const totalBilled = MOCK_FEES.reduce((acc, f) => acc + f.paidAmountAoa, 0);
-  const totalPending = MOCK_FEES.reduce((acc, f) => acc + f.balanceAoa, 0);
+  const totalBilled = fees.reduce((acc, f) => acc + f.paidAmountAoa, 0);
+  const totalPending = fees.reduce((acc, f) => acc + f.balanceAoa, 0);
 
-  const urgentDeadline = MOCK_DEADLINES.find(d => d.daysRemaining !== undefined && d.daysRemaining <= 2);
+  const urgentDeadline = deadlines.find(d => d.daysRemaining !== undefined && d.daysRemaining <= 2);
+
+  const filteredDeadlines = deadlines.filter((d) => {
+    const days = d.daysRemaining ?? 99;
+    if (timeFilter === 'TODAY') return days === 0;
+    if (timeFilter === 'NEXT_7_DAYS') return days <= 7;
+    return days <= 30;
+  });
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -77,7 +86,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <Briefcase className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-white">{MOCK_CASES.length}</div>
+          <div className="text-3xl font-bold text-white">{cases.length}</div>
           <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>+2 novos este mês em Luanda</span>
@@ -96,7 +105,7 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             </div>
           </div>
           <div className="text-3xl font-bold text-white">
-            {MOCK_DEADLINES.filter(d => (d.daysRemaining || 0) <= 7).length}
+            {deadlines.filter(d => (d.daysRemaining || 0) <= 7).length}
           </div>
           <div className="mt-3 flex items-center gap-1.5 text-xs text-amber-400">
             <AlertTriangle className="w-3.5 h-3.5" />
@@ -193,42 +202,48 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
           {/* List of deadlines filtered */}
           <div className="space-y-3">
-            {MOCK_DEADLINES.map((dl) => (
-              <div
-                key={dl.id}
-                onClick={() => onSelectCase(dl.caseId)}
-                className="p-4 rounded-xl bg-slate-800/90 hover:bg-slate-750 border border-slate-700/70 hover:border-slate-600 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                      {dl.caseNumber}
-                    </span>
-                    <span className="text-xs text-slate-400 font-medium">
-                      {dl.assignedLawyerName}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
-                    {dl.title}
-                  </h3>
-                  <p className="text-xs text-slate-400 line-clamp-1">{dl.description}</p>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="text-right">
-                    <div className="text-xs font-semibold text-slate-200">{dl.dueDate}</div>
-                    <div className="text-[11px] text-slate-400">{dl.dueTime}</div>
-                  </div>
-                  <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    (dl.daysRemaining || 0) <= 2
-                      ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  }`}>
-                    {dl.daysRemaining === 0 ? 'Hoje' : `${dl.daysRemaining} dias`}
-                  </div>
-                </div>
+            {filteredDeadlines.length === 0 ? (
+              <div className="p-8 rounded-xl bg-slate-800/40 text-center text-xs text-slate-400">
+                Sem prazos processuais para o período temporal selecionado.
               </div>
-            ))}
+            ) : (
+              filteredDeadlines.map((dl) => (
+                <div
+                  key={dl.id}
+                  onClick={() => onSelectCase(dl.caseId)}
+                  className="p-4 rounded-xl bg-slate-800/90 hover:bg-slate-750 border border-slate-700/70 hover:border-slate-600 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                        {dl.caseNumber}
+                      </span>
+                      <span className="text-xs text-slate-400 font-medium">
+                        {dl.assignedLawyerName}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">
+                      {dl.title}
+                    </h3>
+                    <p className="text-xs text-slate-400 line-clamp-1">{dl.description}</p>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <div className="text-xs font-semibold text-slate-200">{dl.dueDate}</div>
+                      <div className="text-[11px] text-slate-400">{dl.dueTime}</div>
+                    </div>
+                    <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                      (dl.daysRemaining || 0) <= 2
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                    }`}>
+                      {dl.daysRemaining === 0 ? 'Hoje' : `${dl.daysRemaining} dias`}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

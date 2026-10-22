@@ -1,6 +1,6 @@
 import React from 'react';
 import { DeadlinePriority } from '@sigea/shared';
-import { MOCK_DEADLINES } from '../../data/mockData';
+import { useCases } from '../../context/CasesContext';
 import { Clock, Calendar, ShieldAlert, Search } from 'lucide-react';
 
 interface DeadlinesListProps {
@@ -8,9 +8,10 @@ interface DeadlinesListProps {
 }
 
 export const DeadlinesList: React.FC<DeadlinesListProps> = ({ onSelectCase }) => {
+  const { deadlines } = useCases();
   const [searchTerm, setSearchTerm] = React.useState('');
 
-  const filteredDeadlines = MOCK_DEADLINES.filter(
+  const filteredDeadlines = deadlines.filter(
     (d) =>
       d.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||

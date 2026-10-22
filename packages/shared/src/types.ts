@@ -90,10 +90,24 @@ export interface LegalCase {
   distributionDate: string;
   claimValueAoa: number; // Valor da Causa em Kwanzas
   provisionedValueAoa?: number;
+  priority?: 'NORMAL' | 'HIGH' | 'CRITICAL';
+  section?: string; // Ex: 1ª Secção, Sala do Cível
+  teamMembers?: string[];
   isConfidential: boolean;
   description?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CaseActivityItem {
+  id: string;
+  caseId: string;
+  title: string;
+  description: string;
+  authorName: string;
+  authorRole: string;
+  type: 'JUDICIAL_NOTE' | 'COURT_DECISION' | 'PETITION_FILED' | 'HEARING' | 'INTERNAL_NOTE' | 'STATUS_CHANGE';
+  createdAt: string;
 }
 
 export interface LegalDocument {

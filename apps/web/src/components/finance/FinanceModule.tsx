@@ -1,11 +1,12 @@
 import { formatAOA } from '@sigea/shared';
-import { MOCK_FEES } from '../../data/mockData';
+import { useCases } from '../../context/CasesContext';
 import { BadgeDollarSign, Plus, Download } from 'lucide-react';
 
 export const FinanceModule: React.FC = () => {
-  const totalBilled = MOCK_FEES.reduce((acc, f) => acc + f.amountAoa, 0);
-  const totalPaid = MOCK_FEES.reduce((acc, f) => acc + f.paidAmountAoa, 0);
-  const totalPending = MOCK_FEES.reduce((acc, f) => acc + f.balanceAoa, 0);
+  const { fees } = useCases();
+  const totalBilled = fees.reduce((acc, f) => acc + f.amountAoa, 0);
+  const totalPaid = fees.reduce((acc, f) => acc + f.paidAmountAoa, 0);
+  const totalPending = fees.reduce((acc, f) => acc + f.balanceAoa, 0);
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
@@ -59,7 +60,7 @@ export const FinanceModule: React.FC = () => {
         </div>
 
         <div className="divide-y divide-slate-800 rounded-2xl bg-slate-800/60 border border-slate-700/70 overflow-hidden">
-          {MOCK_FEES.map((fee) => (
+          {fees.map((fee) => (
             <div key={fee.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-800/80 transition-colors">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">

@@ -5,7 +5,11 @@
   "description": "SIGEA — Sistema Integrado de Gestão de Escritórios de Advocacia em Angola",
   "scripts": {
     "dev": "pnpm --filter @sigea/web dev",
-    "build": "pnpm --filter @sigea/shared build && pnpm --filter @sigea/web build",
+    "dev:api": "pnpm --filter @sigea/api dev",
+    "dev:all": "pnpm -r --parallel dev",
+    "build": "pnpm --filter @sigea/shared build && pnpm --filter @sigea/web build && pnpm --filter @sigea/api build",
+    "build:web": "pnpm --filter @sigea/shared build && pnpm --filter @sigea/web build",
+    "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint"
   },

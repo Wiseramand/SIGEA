@@ -19,7 +19,9 @@ import {
   Deadline,
   FeeItem,
   InternProfile,
-  Task
+  Task,
+  LegalDocument,
+  CaseActivityItem
 } from '@sigea/shared';
 
 export const CURRENT_ORGANIZATION: Organization = {
@@ -221,6 +223,9 @@ export const MOCK_CASES: LegalCase[] = [
     distributionDate: '2024-02-14',
     claimValueAoa: 145000000, // 145 Milhões de Kwanzas
     provisionedValueAoa: 120000000,
+    priority: 'CRITICAL',
+    section: '2ª Secção do Cível e Comercial',
+    teamMembers: ['Dr. Rui Falcão de Carvalho', 'Nzinga Luvumbo (Estagiário)'],
     isConfidential: false,
     description: 'Incumprimento culposo de contrato de fornecimento de infraestrutura de telecomunicações submarinas.',
     createdAt: '2024-02-14T08:30:00Z',
@@ -246,6 +251,9 @@ export const MOCK_CASES: LegalCase[] = [
     distributionDate: '2023-11-03',
     claimValueAoa: 42000000,
     provisionedValueAoa: 15000000,
+    priority: 'HIGH',
+    section: '1ª Secção de Trabalho',
+    teamMembers: ['Dr. Mateus Afonso Quaresma', 'Nzinga Luvumbo (Estagiário)'],
     isConfidential: false,
     description: 'Audiência de discussão e julgamento agendada com alegações orais sobre o cumprimento do pré-aviso legal.',
     createdAt: '2023-11-03T10:15:00Z',
@@ -271,6 +279,9 @@ export const MOCK_CASES: LegalCase[] = [
     distributionDate: '2025-01-22',
     claimValueAoa: 85000000,
     provisionedValueAoa: 85000000,
+    priority: 'NORMAL',
+    section: 'Secção Única de Família e Sucessões',
+    teamMembers: ['Dra. Kieza dos Santos Manuel'],
     isConfidential: true,
     description: 'Arrolamento de acervo patrimonial hereditário incluindo imóveis no Miramar, Talatona e contas bancárias.',
     createdAt: '2025-01-22T14:00:00Z',
@@ -296,6 +307,9 @@ export const MOCK_CASES: LegalCase[] = [
     distributionDate: '2024-07-19',
     claimValueAoa: 68000000,
     provisionedValueAoa: 68000000,
+    priority: 'HIGH',
+    section: '2ª Secção do Cível',
+    teamMembers: ['Dr. Rui Falcão de Carvalho'],
     isConfidential: false,
     description: 'Penhora de contas bancárias e créditos de empreitada retidos no BNA e bancos comerciais.',
     createdAt: '2024-07-19T09:30:00Z',
@@ -529,3 +543,182 @@ export const MOCK_TASKS: Task[] = [
     createdAt: '2026-10-15T09:00:00Z'
   }
 ];
+
+export const MOCK_DOCUMENTS: LegalDocument[] = [
+  {
+    id: 'doc-001',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    clientId: 'cli-001',
+    title: 'Petição_Inicial_Devidamente_Distribuida.pdf',
+    category: 'PETITION',
+    fileKey: 'cases/0284-24-c/peticao_inicial.pdf',
+    fileSize: 2450000,
+    fileType: 'application/pdf',
+    version: 1,
+    uploadedById: 'user-01',
+    uploadedByName: 'Dr. Rui Falcão de Carvalho',
+    isClientVisible: true,
+    createdAt: '2024-02-14T08:35:00Z'
+  },
+  {
+    id: 'doc-002',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    clientId: 'cli-001',
+    title: 'Procuracao_Forense_c_Poderes_Especiais.pdf',
+    category: 'POWER_OF_ATTORNEY',
+    fileKey: 'cases/0284-24-c/procuracao_forense.pdf',
+    fileSize: 850000,
+    fileType: 'application/pdf',
+    version: 1,
+    uploadedById: 'user-01',
+    uploadedByName: 'Dr. Rui Falcão de Carvalho',
+    isClientVisible: true,
+    createdAt: '2024-02-12T14:20:00Z'
+  },
+  {
+    id: 'doc-003',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    clientId: 'cli-001',
+    title: 'Contrato_Fornecimento_Submarino_Atlas.pdf',
+    category: 'CONTRACT',
+    fileKey: 'cases/0284-24-c/contrato_atlas.pdf',
+    fileSize: 14200000,
+    fileType: 'application/pdf',
+    version: 2,
+    uploadedById: 'user-04',
+    uploadedByName: 'Nzinga Luvumbo (Estagiário)',
+    isClientVisible: true,
+    createdAt: '2024-02-14T09:10:00Z'
+  },
+  {
+    id: 'doc-004',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    clientId: 'cli-001',
+    title: 'Contestacao_Reu_Atlas_Telecom.pdf',
+    category: 'EVIDENCE',
+    fileKey: 'cases/0284-24-c/contestacao_reu.pdf',
+    fileSize: 3100000,
+    fileType: 'application/pdf',
+    version: 1,
+    uploadedById: 'user-01',
+    uploadedByName: 'Cartório do Tribunal Provincial',
+    isClientVisible: false,
+    createdAt: '2024-04-18T11:45:00Z'
+  },
+  {
+    id: 'doc-005',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    clientId: 'cli-001',
+    title: 'Minuta_Requerimento_Pericia_Informatica.docx',
+    category: 'PETITION',
+    fileKey: 'cases/0284-24-c/minuta_pericia.docx',
+    fileSize: 420000,
+    fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    version: 3,
+    uploadedById: 'user-04',
+    uploadedByName: 'Nzinga Luvumbo (Estagiário)',
+    isClientVisible: false,
+    createdAt: '2026-10-20T16:30:00Z'
+  },
+  {
+    id: 'doc-006',
+    organizationId: 'org-angola-001',
+    caseId: 'case-002',
+    clientId: 'cli-002',
+    title: 'Peticao_Impugnacao_Despedimento_Coletivo.pdf',
+    category: 'PETITION',
+    fileKey: 'cases/1105-23-trab/peticao.pdf',
+    fileSize: 1800000,
+    fileType: 'application/pdf',
+    version: 1,
+    uploadedById: 'user-03',
+    uploadedByName: 'Dr. Mateus Afonso Quaresma',
+    isClientVisible: true,
+    createdAt: '2023-11-03T10:30:00Z'
+  },
+  {
+    id: 'doc-007',
+    organizationId: 'org-angola-001',
+    caseId: 'case-003',
+    clientId: 'cli-003',
+    title: 'Certidoes_Prediais_Conservatoria_Luanda.pdf',
+    category: 'EVIDENCE',
+    fileKey: 'cases/0078-25-fam/certidoes_prediais.pdf',
+    fileSize: 5600000,
+    fileType: 'application/pdf',
+    version: 1,
+    uploadedById: 'user-02',
+    uploadedByName: 'Dra. Kieza dos Santos Manuel',
+    isClientVisible: true,
+    createdAt: '2025-01-22T14:45:00Z'
+  }
+];
+
+export const MOCK_ACTIVITIES: CaseActivityItem[] = [
+  {
+    id: 'act-001',
+    caseId: 'case-001',
+    title: 'Despacho Saneador e Fixação da Base Instrutória',
+    description: 'Juiz de Direito Dr. Valdemar Pascoal notificou as partes para apresentação do rol de testemunhas e quesitos periciais no prazo de 5 dias úteis.',
+    authorName: 'Tribunal da Comarca de Luanda',
+    authorRole: 'Secretaria Judicial',
+    type: 'COURT_DECISION',
+    createdAt: '2026-10-20T08:30:00Z'
+  },
+  {
+    id: 'act-002',
+    caseId: 'case-001',
+    title: 'Reunião Preparatória com o Cliente Kwanza Investimentos',
+    description: 'Alinhamento com o PCA Dr. Baptista Sumbe sobre os quesitos técnicos a submeter ao perito informático nomeado pelo tribunal.',
+    authorName: 'Dr. Rui Falcão de Carvalho',
+    authorRole: 'Sócio Patrono',
+    type: 'INTERNAL_NOTE',
+    createdAt: '2026-10-15T15:00:00Z'
+  },
+  {
+    id: 'act-003',
+    caseId: 'case-001',
+    title: 'Junção da Contestação da Ré Atlas Telecomunicações',
+    description: 'A ré deduziu oposição por impugnação especificada, alegando caso de força maior na rutura do cabo submarino de fibra ótica.',
+    authorName: 'Cartório do 2º Juízo Cível',
+    authorRole: 'Oficial de Justiça',
+    type: 'PETITION_FILED',
+    createdAt: '2024-04-18T10:15:00Z'
+  },
+  {
+    id: 'act-004',
+    caseId: 'case-001',
+    title: 'Distribuição e Autuação da Ação Ordinária',
+    description: 'Entrada formal da petição inicial na Sala do Cível e Comercial do Tribunal Provincial de Luanda.',
+    authorName: 'Dr. Rui Falcão de Carvalho',
+    authorRole: 'Advogado Mandatário',
+    type: 'STATUS_CHANGE',
+    createdAt: '2024-02-14T08:30:00Z'
+  },
+  {
+    id: 'act-005',
+    caseId: 'case-002',
+    title: 'Designação de Data para Audiência de Discussão e Julgamento',
+    description: 'Audiência fixada pela Meritíssima Juíza para inquirição de 6 testemunhas arroladas pelas partes.',
+    authorName: 'Dra. Analtina Lourenço (Juíza)',
+    authorRole: 'Magistrada Judicial',
+    type: 'HEARING',
+    createdAt: '2026-10-18T11:00:00Z'
+  },
+  {
+    id: 'act-006',
+    caseId: 'case-003',
+    title: 'Despacho de Citação dos Herdeiros Co-interessados',
+    description: 'Expedidas cartas precatórias para citação pessoal dos herdeiros residentes no município de Belas e Viana.',
+    authorName: 'Tribunal da Comarca de Belas',
+    authorRole: 'Escrivão de Direito',
+    type: 'COURT_DECISION',
+    createdAt: '2025-01-25T09:40:00Z'
+  }
+];
+
