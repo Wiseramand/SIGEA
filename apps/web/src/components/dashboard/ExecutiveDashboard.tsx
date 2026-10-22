@@ -12,7 +12,8 @@ import {
   Calendar,
   Building,
   FileCheck2,
-  TrendingUp
+  TrendingUp,
+  Sparkles
 } from 'lucide-react';
 
 interface ExecutiveDashboardProps {
@@ -57,6 +58,13 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
 
         <div className="flex items-center gap-3">
           <button
+            onClick={() => onNavigateTab('intelligence')}
+            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 border border-indigo-400/30"
+          >
+            <Sparkles className="w-4 h-4 text-indigo-200" />
+            <span>SIGEA Intelligence</span>
+          </button>
+          <button
             onClick={() => onNavigateTab('cases')}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"
           >
@@ -65,11 +73,41 @@ export const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
           </button>
           <button
             onClick={() => onNavigateTab('deadlines')}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition-all flex items-center gap-2"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition-all flex items-center gap-2"
           >
             <Clock className="w-4 h-4 text-amber-400" />
             <span>Registar Prazo</span>
           </button>
+        </div>
+      </div>
+
+      {/* Banner Executivo: SIGEA Intelligence */}
+      <div 
+        onClick={() => onNavigateTab('intelligence')}
+        className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/70 via-slate-800/90 to-blue-950/60 border border-indigo-500/40 hover:border-indigo-400/70 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group shadow-sm"
+      >
+        <div className="flex items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 group-hover:scale-110 transition-transform">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-white group-hover:text-indigo-200 transition-colors">
+                Centro Executivo de Inteligência Jurídica & Alertas Proativos
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/25 text-indigo-300 border border-indigo-500/30">
+                IA Forense
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              1 prazo peremptório crítico em 48h, {fees.filter(f => (f.balanceAoa || 0) > 0).length} cobranças pendentes e recomendações de balanceamento processual.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-semibold text-indigo-300 group-hover:text-white shrink-0">
+          <span>Abrir Centro de Inteligência</span>
+          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </div>
       </div>
 

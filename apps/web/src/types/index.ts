@@ -2,6 +2,8 @@ import { UserRole } from '@sigea/shared';
 
 export type NavigationTab = 
   | 'dashboard'
+  | 'intelligence'
+  | 'legal-ai'
   | 'cases'
   | 'clients'
   | 'deadlines'

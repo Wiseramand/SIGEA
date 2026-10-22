@@ -21,7 +21,8 @@ import {
   InternProfile,
   Task,
   LegalDocument,
-  CaseActivityItem
+  CaseActivityItem,
+  ExpenseItem
 } from '@sigea/shared';
 
 export const CURRENT_ORGANIZATION: Organization = {
@@ -457,6 +458,100 @@ export const MOCK_FEES: FeeItem[] = [
     receiptNumber: 'REC-2026/0088'
   }
 ];
+
+export const MOCK_EXPENSES: ExpenseItem[] = [
+  {
+    id: 'exp-001',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    caseNumber: '0284/24-C',
+    description: 'Preparos judiciais e taxa pericial da Sala do Cível e Comercial (Tribunal de Luanda)',
+    amountAoa: 850000,
+    isReimbursable: true,
+    isReimbursed: true,
+    date: '2026-02-20',
+    receiptUrl: 'recibo_preparo_0284.pdf'
+  },
+  {
+    id: 'exp-002',
+    organizationId: 'org-angola-001',
+    caseId: 'case-001',
+    caseNumber: '0284/24-C',
+    description: 'Emolumentos de certidão de registo comercial no Guiché Único da Empresa',
+    amountAoa: 145000,
+    isReimbursable: true,
+    isReimbursed: false,
+    date: '2026-04-12',
+    receiptUrl: 'emolumentos_gue.pdf'
+  },
+  {
+    id: 'exp-003',
+    organizationId: 'org-angola-001',
+    caseId: 'case-002',
+    caseNumber: '1105/23-TRAB',
+    description: 'Custas de notificação de testemunhas sindicais na Sala de Trabalho de Luanda',
+    amountAoa: 320000,
+    isReimbursable: true,
+    isReimbursed: true,
+    date: '2026-03-05'
+  },
+  {
+    id: 'exp-004',
+    organizationId: 'org-angola-001',
+    caseId: 'case-003',
+    caseNumber: '0078/25-FAM',
+    description: 'Certidões prediais da Conservatória do Registo Predial de Luanda e Belas',
+    amountAoa: 240000,
+    isReimbursable: true,
+    isReimbursed: false,
+    date: '2026-01-28'
+  },
+  {
+    id: 'exp-005',
+    organizationId: 'org-angola-001',
+    caseId: 'case-004',
+    caseNumber: '0931/24-EXEC',
+    description: 'Deslocação forense e custas operacionais de solicitador de execução em Benguela',
+    amountAoa: 520000,
+    isReimbursable: false,
+    isReimbursed: false,
+    date: '2026-07-25'
+  }
+];
+
+export interface CaseProfitabilityMetric {
+  hoursWorked: number;
+  hourlyRateAoa: number;
+  contractModel: string;
+  expenseBudgetAoa: number;
+}
+
+export const MOCK_CASE_METRICS: Record<string, CaseProfitabilityMetric> = {
+  'case-001': {
+    hoursWorked: 54,
+    hourlyRateAoa: 75000,
+    contractModel: 'Misto (Entrada Fixa + Quota Litis 5%)',
+    expenseBudgetAoa: 1500000
+  },
+  'case-002': {
+    hoursWorked: 38,
+    hourlyRateAoa: 60000,
+    contractModel: 'Avença Mensal Contenciosa',
+    expenseBudgetAoa: 500000
+  },
+  'case-003': {
+    hoursWorked: 24,
+    hourlyRateAoa: 65000,
+    contractModel: 'Honorário Fixo por Fases',
+    expenseBudgetAoa: 400000
+  },
+  'case-004': {
+    hoursWorked: 18,
+    hourlyRateAoa: 70000,
+    contractModel: 'Honorário de Êxito na Execução',
+    expenseBudgetAoa: 300000
+  }
+};
 
 export const MOCK_INTERNS: InternProfile[] = [
   {

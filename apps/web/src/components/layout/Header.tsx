@@ -1,13 +1,14 @@
 import React from 'react';
 import { UserRole } from '@sigea/shared';
 import { CURRENT_ORGANIZATION } from '../../data/mockData';
-import { Search, Bell, Shield, Scale, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Search, Bell, Shield, Scale, ChevronDown, CheckCircle2, Globe2 } from 'lucide-react';
 
 interface HeaderProps {
   currentRole: UserRole;
   onRoleChange: (role: UserRole) => void;
   onOpenSearch: () => void;
   unreadCount: number;
+  onOpenLanding?: () => void;
 }
 
 const ROLE_LABELS: Record<UserRole, { label: string; badge: string; desc: string }> = {
@@ -26,7 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   currentRole,
   onRoleChange,
   onOpenSearch,
-  unreadCount
+  unreadCount,
+  onOpenLanding
 }) => {
   const [roleMenuOpen, setRoleMenuOpen] = React.useState(false);
   const currentRoleInfo = ROLE_LABELS[currentRole] || { label: 'Utilizador', badge: currentRole, desc: '' };
@@ -41,21 +43,21 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-16 shrink-0 bg-[#0A0E18] border-b border-slate-800/80 px-6 flex items-center justify-between select-none z-30">
       {/* Left side: Org Info */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-400/30">
-            <Scale className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-700/80 flex items-center justify-center shadow-xs">
+            <Scale className="w-4 h-4 text-blue-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-base text-white tracking-tight">SIGEA</span>
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <span className="font-bold text-sm text-white tracking-tight font-serif">SIGEA</span>
+              <span className="text-[9px] uppercase font-mono font-bold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-400 border border-blue-800/60">
                 Angola
               </span>
             </div>
-            <p className="text-xs text-slate-400 truncate max-w-[280px]">
+            <p className="text-[11px] text-slate-400 truncate max-w-[280px]">
               {currentRole === UserRole.SUPER_ADMIN ? 'Painel Global da Plataforma' : CURRENT_ORGANIZATION.name}
             </p>
           </div>
@@ -63,31 +65,43 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Middle: Search trigger */}
-      <div className="flex-1 max-w-md mx-8">
+      <div className="flex-1 max-w-md mx-6">
         <button
           onClick={onOpenSearch}
-          className="w-full flex items-center justify-between px-3.5 py-2 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 hover:border-slate-600 rounded-lg text-sm text-slate-400 transition-all shadow-inner group"
+          className="w-full flex items-center justify-between px-3.5 py-2 bg-slate-900/90 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 rounded-lg text-xs text-slate-400 transition-all group"
         >
           <div className="flex items-center gap-2">
-            <Search className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
+            <Search className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-400 transition-colors" />
             <span>Pesquisar processos, clientes, prazos...</span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">
+          <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
             ⌘K
           </kbd>
         </button>
       </div>
 
-      {/* Right side: Role Switcher & Profile */}
-      <div className="flex items-center gap-4">
+      {/* Right side: Landing Shortcut, Notifications & Role Switcher */}
+      <div className="flex items-center gap-3">
+        {/* Institutional Landing Page button */}
+        {onOpenLanding && (
+          <button
+            onClick={onOpenLanding}
+            title="Ver Página Inicial Institucional"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-900/60 hover:bg-slate-800 border border-slate-800 transition-colors"
+          >
+            <Globe2 className="w-3.5 h-3.5 text-blue-400" />
+            <span className="hidden sm:inline">Página Inicial</span>
+          </button>
+        )}
+
         {/* Notifications */}
         <button 
-          title="Notificações"
-          className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors"
+          title="Notificações do Cartório & Prazos"
+          className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-colors"
         >
-          <Bell className="w-5 h-5" />
+          <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full ring-2 ring-slate-900 animate-pulse" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full ring-2 ring-slate-900" />
           )}
         </button>
 
@@ -95,17 +109,17 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-            className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-750 border border-blue-500/30 hover:border-blue-500/60 rounded-lg text-left transition-all shadow-sm"
+            className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-850 border border-slate-700/80 rounded-lg text-left transition-all"
           >
-            <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-xs font-semibold text-blue-400">
+            <div className="w-6 h-6 rounded-md bg-blue-950 border border-blue-800/80 flex items-center justify-center text-[10px] font-mono font-semibold text-blue-400">
               {currentRole.slice(0, 2)}
             </div>
             <div className="hidden md:block">
               <div className="text-xs font-medium text-white flex items-center gap-1.5">
                 {currentRoleInfo.label}
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="w-3 h-3 text-slate-400" />
               </div>
-              <div className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
+              <div className="text-[9px] text-amber-400/90 font-mono font-medium uppercase tracking-wider">
                 {currentRoleInfo.badge}
               </div>
             </div>
@@ -113,15 +127,15 @@ export const Header: React.FC<HeaderProps> = ({
 
           {roleMenuOpen && (
             <div 
-              className="absolute right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl py-2 z-50 divide-y divide-slate-700/50"
+              className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl py-2 z-50 divide-y divide-slate-800"
               onMouseLeave={() => setRoleMenuOpen(false)}
             >
               <div className="px-3.5 py-2">
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                <p className="text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-wider">
                   Simulação de Papéis (RBAC Demo)
                 </p>
                 <p className="text-xs text-slate-300 mt-0.5">
-                  Alterne entre perfis para avaliar a experiência personalizada:
+                  Alterne entre perfis para avaliar a experiência:
                 </p>
               </div>
 
@@ -137,15 +151,15 @@ export const Header: React.FC<HeaderProps> = ({
                         setRoleMenuOpen(false);
                       }}
                       className={`w-full px-3.5 py-2 flex items-center justify-between text-left transition-colors ${
-                        isSelected ? 'bg-blue-600/20 text-white' : 'hover:bg-slate-700/60 text-slate-300'
+                        isSelected ? 'bg-blue-950/60 text-white font-medium' : 'hover:bg-slate-800/60 text-slate-300'
                       }`}
                     >
                       <div>
-                        <div className="text-xs font-semibold flex items-center gap-1.5">
+                        <div className="text-xs flex items-center gap-1.5">
                           {info.label}
                           {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-blue-400" />}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">
                           {info.badge} • {info.desc}
                         </div>
                       </div>
@@ -154,9 +168,9 @@ export const Header: React.FC<HeaderProps> = ({
                 })}
               </div>
 
-              <div className="px-3.5 py-2 text-[11px] text-slate-400 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Multi-tenancy e autorização estrita</span>
+              <div className="px-3.5 py-2 text-[10px] text-slate-400 flex items-center gap-1.5">
+                <Shield className="w-3 h-3 text-emerald-400" />
+                <span>Isolamento seguro de dados na República de Angola</span>
               </div>
             </div>
           )}

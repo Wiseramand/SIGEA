@@ -5,6 +5,7 @@ import {
   LegalDocument,
   CaseActivityItem,
   FeeItem,
+  ExpenseItem,
   LegalParty,
   CaseStatus,
   FeePaymentStatus
@@ -14,7 +15,8 @@ import {
   MOCK_DEADLINES,
   MOCK_DOCUMENTS,
   MOCK_ACTIVITIES,
-  MOCK_FEES
+  MOCK_FEES,
+  MOCK_EXPENSES
 } from '../data/mockData';
 
 interface ToastInfo {
@@ -29,6 +31,7 @@ interface CasesContextType {
   documents: LegalDocument[];
   activities: CaseActivityItem[];
   fees: FeeItem[];
+  expenses: ExpenseItem[];
   toasts: ToastInfo[];
   showToast: (message: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
   dismissToast: (id: string) => void;
@@ -39,6 +42,9 @@ interface CasesContextType {
   addDeadline: (deadline: { caseId: string; title: string; dueDate: string; dueTime?: string; priority: Deadline['priority']; description?: string; assignedLawyerName?: string }) => void;
   addActivity: (activity: { caseId: string; title: string; description: string; authorName?: string; authorRole?: string; type?: CaseActivityItem['type'] }) => void;
   addPayment: (feeId: string, amountPaidAoa: number, receiptNumber?: string) => void;
+  addFee: (fee: Omit<FeeItem, 'id' | 'organizationId'>) => void;
+  addExpense: (expense: Omit<ExpenseItem, 'id' | 'organizationId'>) => void;
+  markExpenseReimbursed: (expenseId: string) => void;
   resetAllToMockData: () => void;
 }
 
@@ -49,7 +55,8 @@ const STORAGE_KEYS = {
   DEADLINES: 'sigea_deadlines_v1',
   DOCUMENTS: 'sigea_documents_v1',
   ACTIVITIES: 'sigea_activities_v1',
-  FEES: 'sigea_fees_v1'
+  FEES: 'sigea_fees_v1',
+  EXPENSES: 'sigea_expenses_v1'
 };
 
 export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -98,6 +105,15 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   });
 
+  const [expenses, setExpenses] = useState<ExpenseItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.EXPENSES);
+      return saved ? JSON.parse(saved) : MOCK_EXPENSES;
+    } catch {
+      return MOCK_EXPENSES;
+    }
+  });
+
   const [toasts, setToasts] = useState<ToastInfo[]>([]);
 
   // Persist to local storage
@@ -108,10 +124,11 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
       localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(activities));
       localStorage.setItem(STORAGE_KEYS.FEES, JSON.stringify(fees));
+      localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
     } catch (e) {
       console.warn('LocalStorage error:', e);
     }
-  }, [cases, deadlines, documents, activities, fees]);
+  }, [cases, deadlines, documents, activities, fees, expenses]);
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     const id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6);
@@ -336,17 +353,46 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('Pagamento de honorário registado com sucesso!', 'success');
   };
 
+  const addFee = (feeData: Omit<FeeItem, 'id' | 'organizationId'>) => {
+    const newFee: FeeItem = {
+      ...feeData,
+      id: 'fee-' + Date.now(),
+      organizationId: 'org-angola-001'
+    };
+    setFees((prev) => [newFee, ...prev]);
+    showToast('Novo lançamento de honorários registado com sucesso!', 'success');
+  };
+
+  const addExpense = (expenseData: Omit<ExpenseItem, 'id' | 'organizationId'>) => {
+    const newExp: ExpenseItem = {
+      ...expenseData,
+      id: 'exp-' + Date.now(),
+      organizationId: 'org-angola-001'
+    };
+    setExpenses((prev) => [newExp, ...prev]);
+    showToast('Despesa processual registada com sucesso!', 'success');
+  };
+
+  const markExpenseReimbursed = (expenseId: string) => {
+    setExpenses((prev) =>
+      prev.map((e) => (e.id === expenseId ? { ...e, isReimbursed: true } : e))
+    );
+    showToast('Despesa marcada como reembolsada pelo cliente.', 'info');
+  };
+
   const resetAllToMockData = () => {
     setCases(MOCK_CASES);
     setDeadlines(MOCK_DEADLINES);
     setDocuments(MOCK_DOCUMENTS);
     setActivities(MOCK_ACTIVITIES);
     setFees(MOCK_FEES);
+    setExpenses(MOCK_EXPENSES);
     localStorage.removeItem(STORAGE_KEYS.CASES);
     localStorage.removeItem(STORAGE_KEYS.DEADLINES);
     localStorage.removeItem(STORAGE_KEYS.DOCUMENTS);
     localStorage.removeItem(STORAGE_KEYS.ACTIVITIES);
     localStorage.removeItem(STORAGE_KEYS.FEES);
+    localStorage.removeItem(STORAGE_KEYS.EXPENSES);
     showToast('Dados de demonstração repostos para os valores padrão.', 'info');
   };
 
@@ -358,6 +404,7 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         documents,
         activities,
         fees,
+        expenses,
         toasts,
         showToast,
         dismissToast,
@@ -368,6 +415,9 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addDeadline,
         addActivity,
         addPayment,
+        addFee,
+        addExpense,
+        markExpenseReimbursed,
         resetAllToMockData
       }}
     >

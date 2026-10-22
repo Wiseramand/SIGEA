@@ -4,7 +4,9 @@ import { NavigationTab } from './types';
 import { CasesProvider, useCases } from './context/CasesContext';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
+import { LandingPage } from './components/landing/LandingPage';
 import { ExecutiveDashboard } from './components/dashboard/ExecutiveDashboard';
+import { SigeaIntelligence } from './components/intelligence/SigeaIntelligence';
 import { CasesList } from './components/cases/CasesList';
 import { CaseDossierModal } from './components/cases/CaseDossierModal';
 import { ClientsList } from './components/clients/ClientsList';
@@ -16,10 +18,12 @@ import { SuperAdminView } from './components/superadmin/SuperAdminView';
 import { TasksList } from './components/tasks/TasksList';
 import { AuditLogView } from './components/audit/AuditLogView';
 import { GlobalSearchModal } from './components/search/GlobalSearchModal';
+import { SigeaLegalAi } from './components/legal-ai/SigeaLegalAi';
 
 const AppContent: React.FC = () => {
   const { cases } = useCases();
 
+  const [isLandingVisible, setIsLandingVisible] = useState(false);
   const [currentRole, setCurrentRole] = useState<UserRole>(UserRole.PARTNER);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('dashboard');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -45,30 +49,55 @@ const AppContent: React.FC = () => {
     ? cases.find((c) => c.id === selectedCaseId) || null
     : null;
 
+  // If user requested to view the institutional Landing Page
+  if (isLandingVisible) {
+    return (
+      <LandingPage
+        onEnterApp={() => setIsLandingVisible(false)}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col text-slate-100">
-      {/* Top Header with Role Switcher */}
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#070B14] text-slate-100 antialiased">
+      {/* Top Header with Role Switcher & Landing Page button */}
       <Header
         currentRole={currentRole}
         onRoleChange={handleRoleChange}
         onOpenSearch={() => setIsSearchOpen(true)}
         unreadCount={3}
+        onOpenLanding={() => setIsLandingVisible(true)}
       />
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Navigation Sidebar */}
+      {/* Main Container: Fixed Sidebar + Scrollable Main Content */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {/* Navigation Sidebar: Fixed, stays stationary while body scrolls */}
         <Sidebar
           currentRole={currentRole}
           currentTab={currentTab}
           onSelectTab={(tab) => setCurrentTab(tab)}
+          onOpenLanding={() => setIsLandingVisible(true)}
         />
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto bg-slate-950/60">
+        {/* Main Content Area: Own independent scroll container */}
+        <main className="flex-1 h-full overflow-y-auto overflow-x-hidden min-h-0 bg-[#070B14]/80">
           {currentTab === 'dashboard' && (
             <ExecutiveDashboard
               onSelectCase={(caseId) => setSelectedCaseId(caseId)}
               onNavigateTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
+
+          {currentTab === 'intelligence' && (
+            <SigeaIntelligence
+              onSelectCase={(caseId) => setSelectedCaseId(caseId)}
+              onNavigateTab={(tab) => setCurrentTab(tab)}
+            />
+          )}
+
+          {currentTab === 'legal-ai' && (
+            <SigeaLegalAi
+              onSelectCase={(caseId) => setSelectedCaseId(caseId)}
             />
           )}
 
@@ -84,7 +113,9 @@ const AppContent: React.FC = () => {
 
           {currentTab === 'tasks' && <TasksList />}
 
-          {currentTab === 'finance' && <FinanceModule />}
+          {currentTab === 'finance' && (
+            <FinanceModule onSelectCase={(caseId) => setSelectedCaseId(caseId)} />
+          )}
 
           {currentTab === 'interns' && <InternsManagement />}
 
