@@ -12,7 +12,8 @@ import {
   Lock,
   FileCheck,
   Award,
-  BarChart3
+  BarChart3,
+  Quote
 } from 'lucide-react';
 import { CURRENT_ORGANIZATION } from '../../data/mockData';
 
@@ -24,40 +25,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
   const [activeFeatureTab, setActiveFeatureTab] = useState<'dossier' | 'intelligence' | 'finance' | 'deadlines' | 'ai'>('dossier');
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white antialiased">
       {/* Top Institutional Bar */}
-      <div className="bg-[#0B1120] border-b border-slate-800/80 px-4 sm:px-8 py-2 text-xs text-slate-400 flex items-center justify-between">
+      <div className="bg-[#0A0F1D] border-b border-slate-800/80 px-4 sm:px-8 py-2 text-xs text-slate-400 flex items-center justify-between z-20 relative">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-amber-400 font-medium">
             <Award className="w-3.5 h-3.5" />
-            Em conformidade com a Ordem dos Advogados de Angola (OAA)
+            Conforme com o Estatuto da Ordem dos Advogados de Angola (OAA)
           </span>
           <span className="hidden md:inline text-slate-600">•</span>
-          <span className="hidden md:inline text-slate-400">Lei de Protecção de Dados Pessoais (Lei n.º 22/11)</span>
+          <span className="hidden md:inline text-slate-400">Lei de Protecção de Dados Pessoais de Angola (Lei n.º 22/11)</span>
         </div>
         <div className="flex items-center gap-4 text-slate-400">
           <span className="text-[11px] font-mono">Luanda • República de Angola</span>
           <button
             onClick={onEnterApp}
-            className="text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 transition-colors"
+            className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 transition-colors"
           >
-            <span>Acesso Restrito</span>
+            <span>Acesso Restrito ao Escritório</span>
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <header className="sticky top-0 z-40 bg-[#070B14]/90 backdrop-blur-md border-b border-slate-800/70 px-4 sm:px-8 py-3.5">
+      <header className="sticky top-0 z-40 bg-[#060911]/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-700 to-slate-900 border border-blue-500/30 flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-700 to-slate-900 border border-blue-500/40 flex items-center justify-center shadow-lg">
               <Scale className="w-5 h-5 text-blue-400" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-bold tracking-tight text-white font-serif">SIGEA</span>
-                <span className="text-[10px] tracking-widest font-mono uppercase px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60 text-blue-400">
+                <span className="text-[9px] tracking-widest font-mono uppercase px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800/60 text-blue-400 font-semibold">
                   ERP JURÍDICO
                 </span>
               </div>
@@ -69,16 +70,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
 
           <nav className="hidden lg:flex items-center gap-8 text-xs font-medium text-slate-300">
             <a href="#solucoes" className="hover:text-white transition-colors">Soluções</a>
+            <a href="#governanca" className="hover:text-white transition-colors">Governança & Sócios</a>
             <a href="#dossier" className="hover:text-white transition-colors">Dossier 360°</a>
-            <a href="#inteligencia" className="hover:text-white transition-colors">Inteligência & Rentabilidade</a>
+            <a href="#inteligencia" className="hover:text-white transition-colors">Inteligência & Finanças</a>
             <a href="#seguranca" className="hover:text-white transition-colors">Segurança & OAA</a>
-            <a href="#metricas" className="hover:text-white transition-colors">Impacto</a>
           </nav>
 
           <div className="flex items-center gap-3">
             <button
               onClick={onEnterApp}
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-blue-600/20 transition-all flex items-center gap-2 border border-blue-500/40"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-900/30 transition-all flex items-center gap-2 border border-blue-400/40"
             >
               <span>Aceder à Demonstração</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -87,141 +88,239 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-24 px-4 sm:px-8 overflow-hidden border-b border-slate-800/60">
-        {/* Subtle executive background accents */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-blue-900/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute -top-32 right-10 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Section with Cinematic Law Firm Photo Background */}
+      <section className="relative min-h-[640px] lg:min-h-[720px] flex items-center justify-center px-4 sm:px-8 py-20 overflow-hidden border-b border-slate-800/80">
+        {/* Background Image: Executive Partner Office in Luanda overlooking the Bay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105 transition-transform duration-1000"
+          style={{ backgroundImage: "url('/images/law_firm_hero_bg.jpg')" }}
+        />
+        
+        {/* Deep, Prestigious Lawyer Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060911] via-[#060911]/90 to-[#060911]/75 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#060911] via-transparent to-transparent" />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-xs text-slate-300 mb-8 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
+        {/* Hero Content */}
+        <div className="max-w-5xl mx-auto text-center relative z-10 pt-4 pb-8">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-xs text-slate-300 mb-8 shadow-xl backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
             <span className="font-medium text-slate-200">Plataforma Desenvolvida para a Realidade Jurídica de Angola</span>
             <span className="text-slate-500">|</span>
             <span className="text-amber-400 font-mono text-[11px]">Luanda • Benguela • Huíla</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight font-serif">
-            A precisão jurídica e a força de gestão que os escritórios de topo exigem.
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight font-serif drop-shadow-sm">
+            A precisão jurídica e a força de gestão que os escritórios líderes exigem.
           </h1>
 
-          <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            O SIGEA unifica o <strong className="text-slate-200 font-semibold">Dossier Eletrónico 360°</strong>, controlo infalível de prazos processuais perentórios, faturação em Kwanzas (AOA) com retenção na fonte e inteligência executiva para sociedades e advogados em Angola.
+          <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed drop-shadow-sm font-normal">
+            O SIGEA unifica o <strong className="text-white font-semibold">Dossier Eletrónico 360°</strong>, controlo infalível de prazos processuais perentórios segundo o CPC angolano, faturação de honorários em Kwanzas (AOA) com retenção na fonte da AGT e inteligência executiva para sociedades de advogados.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <button
               onClick={onEnterApp}
-              className="px-6 py-3.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/30 transition-all flex items-center gap-2.5 border border-blue-400/40 hover:-translate-y-0.5"
+              className="px-6 py-3.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-900/40 transition-all flex items-center gap-2.5 border border-blue-400/40 hover:-translate-y-0.5"
             >
               <Briefcase className="w-4 h-4" />
-              <span>Entrar no Sistema (Visão Sócio Dr. Rui Falcão)</span>
+              <span>Entrar no Sistema (Visão Dr. Rui Falcão • Sócio OAA)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <a
               href="#solucoes"
-              className="px-6 py-3.5 rounded-xl text-sm font-medium bg-slate-900/80 hover:bg-slate-850 text-slate-300 hover:text-white border border-slate-700/80 transition-all flex items-center gap-2"
+              className="px-6 py-3.5 rounded-xl text-sm font-medium bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700 transition-all flex items-center gap-2 backdrop-blur-md"
             >
               <span>Explorar Arquitetura & Módulos</span>
             </a>
           </div>
 
-          {/* Trust Badges */}
-          <div className="mt-14 pt-10 border-t border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-6 text-left">
-            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
-              <div className="text-2xl font-bold font-mono text-white">1.480+</div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">Processos monitorizados em tempo real</div>
+          {/* Key Metrics Bar */}
+          <div className="mt-16 pt-8 border-t border-slate-800/90 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-left">
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md shadow-md">
+              <div className="text-2xl sm:text-3xl font-bold font-mono text-white">1.480+</div>
+              <div className="text-xs text-slate-400 mt-1 font-medium">Processos judiciais acompanhados</div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
-              <div className="text-2xl font-bold font-mono text-amber-400">99.8%</div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md shadow-md">
+              <div className="text-2xl sm:text-3xl font-bold font-mono text-amber-400">99.8%</div>
               <div className="text-xs text-slate-400 mt-1 font-medium">Cumprimento estrito de prazos perentórios</div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
-              <div className="text-2xl font-bold font-mono text-emerald-400">420M+ <span className="text-xs font-normal">AOA</span></div>
-              <div className="text-xs text-slate-400 mt-1 font-medium">Honorários & pagamentos auditados</div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md shadow-md">
+              <div className="text-2xl sm:text-3xl font-bold font-mono text-emerald-400">420M+ <span className="text-xs font-normal">AOA</span></div>
+              <div className="text-xs text-slate-400 mt-1 font-medium">Honorários & recebimentos auditados</div>
             </div>
-            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800">
-              <div className="text-2xl font-bold font-mono text-blue-400">18</div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 backdrop-blur-md shadow-md">
+              <div className="text-2xl sm:text-3xl font-bold font-mono text-blue-400">18</div>
               <div className="text-xs text-slate-400 mt-1 font-medium">Comarcas e Tribunais Superiores mapeados</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive System Preview Strip */}
-      <section className="py-16 px-4 sm:px-8 bg-[#090E1A] border-b border-slate-800/60">
+      {/* Real Law Firm Governance & Board Section (With Board Meeting Photo) */}
+      <section id="governanca" className="py-20 px-4 sm:px-8 bg-[#090E19] border-b border-slate-800/80">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Visual Column: Executive Board Meeting */}
+            <div className="lg:col-span-6 relative">
+              <div className="rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl relative group">
+                <img
+                  src="/images/law_firm_meeting.jpg"
+                  alt="Reunião de Sócios da Sociedade de Advogados em Luanda"
+                  className="w-full h-auto object-cover transform group-hover:scale-102 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1D] via-transparent to-transparent opacity-80" />
+                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-slate-950/85 backdrop-blur-md border border-slate-700/70 text-xs">
+                  <div className="flex items-center justify-between text-slate-300 font-mono">
+                    <span className="font-semibold text-white">Conselho de Sócios • Falcão & Associados</span>
+                    <span className="text-amber-400 text-[10px]">Luanda Bay Towers</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Análise executiva trimestral de rentabilidade por processo, distribuição de estagiários OAA e previsão de desfechos judiciais.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Column */}
+            <div className="lg:col-span-6 space-y-6">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-blue-400 bg-blue-950/80 border border-blue-800/50 px-3 py-1 rounded-full">
+                  Governança & Tomada de Decisão
+                </span>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 font-serif leading-tight">
+                  Desenvolvido para os sócios que conduzem o contencioso e o direito corporativo.
+                </h2>
+                <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+                  Gerir uma sociedade de advogados em Angola exige mais do que uma folha de cálculo. O SIGEA fornece aos sócios uma visão clara da rentabilidade por cliente, dos riscos de prescrição e da produtividade de cada mandatário judicial.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <div className="p-2 rounded-lg bg-blue-950 border border-blue-800/60 text-blue-400 shrink-0 mt-0.5">
+                    <Briefcase className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">Centralização Total do Dossier 360°</h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Todas as peças, articulados, incidentes, notificações dos cartórios judiciais e recursos organizados numa linha temporal cronológica.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <div className="p-2 rounded-lg bg-emerald-950 border border-emerald-800/60 text-emerald-400 shrink-0 mt-0.5">
+                    <BadgeDollarSign className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">Rentabilidade Real em Kwanzas (AOA)</h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Cruzamento entre horas trabalhadas, honorários acordados, retenção na fonte da AGT e despesas judiciais para identificar clientes verdadeiramente lucrativos.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800">
+                  <div className="p-2 rounded-lg bg-amber-950 border border-amber-800/60 text-amber-400 shrink-0 mt-0.5">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white">Supervisão de Estagiários e Patrono</h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      Distribuição de tarefas processuais em estrita conformidade com o Regulamento de Estágio da OAA, com validação obrigatória das minutas pelo patrono titular.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <button
+                  onClick={onEnterApp}
+                  className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-md flex items-center gap-2"
+                >
+                  <span>Ver Painel dos Sócios no Sistema</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive System Mockup Strip */}
+      <section className="py-16 px-4 sm:px-8 bg-[#060911] border-b border-slate-800/80">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-blue-400 bg-blue-950/60 border border-blue-800/40 px-3 py-1 rounded-full">
-              Visão Executiva do Escritório
+            <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full">
+              Ambiente de Trabalho Real
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mt-3 font-serif">
-              Como o escritório gerencia processos complexos no SIGEA
+              Interface Executiva do SIGEA
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-2xl mx-auto">
-              Simulação de ambiente real configurado para a sociedade <em>{CURRENT_ORGANIZATION.name}</em> em Luanda.
+              Ambiente configurado para a sociedade <em>{CURRENT_ORGANIZATION.name}</em> em Luanda.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-700/80 bg-slate-950/80 overflow-hidden shadow-2xl">
+          <div className="rounded-2xl border border-slate-700/80 bg-slate-950 overflow-hidden shadow-2xl">
             {/* Top Mock Window Bar */}
             <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block" />
-                <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
-                <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-                <span className="ml-3 font-mono text-slate-300">sigea.ao/erp/executivo</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                <span className="ml-3 font-mono text-slate-300 text-[11px]">sigea.ao/painel-executivo</span>
               </div>
               <div className="flex items-center gap-2 text-[11px]">
                 <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Sessão Autenticada • Dr. Rui Falcão (Sócio OAA 1420)</span>
+                <span>Dr. Rui Falcão (Sócio OAA 1420) • Sessão Segura</span>
               </div>
             </div>
 
             {/* Quick Preview Content */}
             <div className="p-6 md:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Taxa Global de Êxito</span>
-                    <span className="text-emerald-400 font-semibold">+4.2%</span>
+                    <span className="text-emerald-400 font-semibold font-mono">+4.2%</span>
                   </div>
                   <div className="text-2xl font-bold text-white mt-2 font-mono">78.4%</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Acima da média dos escritórios corporativos</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Tribunais de Comarca e Tribunais de Relação</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span>Prazos Perentórios Críticos</span>
-                    <span className="text-amber-400 font-semibold">1 Iminente</span>
+                    <span className="text-amber-400 font-semibold font-mono">1 Iminente</span>
                   </div>
-                  <div className="text-2xl font-bold text-amber-400 mt-2 font-mono">3 Dias</div>
-                  <div className="text-[11px] text-slate-500 mt-1">Alegações Finais • Proc. 0042/24.1TELU</div>
+                  <div className="text-2xl font-bold text-amber-400 mt-2 font-mono">2 Dias</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Rol de Testemunhas • Proc. 0284/24-C</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800">
                   <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span>Honorários em Cobrança (AOA)</span>
-                    <span className="text-blue-400 font-semibold">82% Regularizado</span>
+                    <span>Faturação Liquidada (AOA)</span>
+                    <span className="text-emerald-400 font-semibold font-mono">72% Recebido</span>
                   </div>
-                  <div className="text-2xl font-bold text-white mt-2 font-mono">68.500.000 <span className="text-xs text-slate-400">AOA</span></div>
-                  <div className="text-[11px] text-slate-500 mt-1">Faturas emitidas com retenção na fonte AGT</div>
+                  <div className="text-2xl font-bold text-white mt-2 font-mono">18.600.000 <span className="text-xs text-slate-400">Kz</span></div>
+                  <div className="text-[11px] text-slate-500 mt-1">Honorários auditados com retenção de 6.5% AGT</div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-blue-950 border border-blue-800/60 flex items-center justify-center">
                     <Scale className="w-4 h-4 text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-white">Pronto para testar a plataforma completa?</h4>
-                    <p className="text-xs text-slate-400">Explore processos reais simulados, cálculos de rentabilidade e assistente com IA determinística.</p>
+                    <h4 className="text-sm font-semibold text-white">Aceda à demonstração interativa completa</h4>
+                    <p className="text-xs text-slate-400">Navegue por dossiers judiciais, recibos de clientes e assistente legal simulado.</p>
                   </div>
                 </div>
                 <button
                   onClick={onEnterApp}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-sm shrink-0"
                 >
-                  Abrir Painel Executivo do SIGEA
+                  Abrir Sistema Agora
                 </button>
               </div>
             </div>
@@ -230,13 +329,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
       </section>
 
       {/* Solutions / Features Section */}
-      <section id="solucoes" className="py-20 px-4 sm:px-8 border-b border-slate-800/60">
+      <section id="solucoes" className="py-20 px-4 sm:px-8 border-b border-slate-800/80 bg-[#090E19]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-slate-400">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-blue-400 bg-blue-950/80 border border-blue-800/50 px-3 py-1 rounded-full">
               Módulos Especializados
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mt-2 font-serif">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mt-3 font-serif">
               Construído para o rigor da advocacia em Angola
             </h2>
             <p className="text-sm text-slate-400 mt-3">
@@ -304,7 +403,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
           </div>
 
           {/* Active Tab Showcase */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-10">
+          <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-10 shadow-xl">
             {activeFeatureTab === 'dossier' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
@@ -504,13 +603,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
                   <div className="p-2.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300">
                     <div className="font-bold flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />
-                      <span>Prazo Crítico: 3 Dias Restantes</span>
+                      <span>Prazo Crítico: 2 Dias Restantes</span>
                     </div>
-                    <div className="text-[11px] text-amber-200/80 mt-1">Alegações Finais de Recurso de Apelação</div>
+                    <div className="text-[11px] text-amber-200/80 mt-1">Apresentação de Rol de Testemunhas e Requerimento Pericial</div>
                   </div>
                   <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
-                    <div className="font-semibold text-slate-200">Prazo Ordinário: 12 Dias</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">Contestação de Embargos de Executado</div>
+                    <div className="font-semibold text-slate-200">Prazo Ordinário: 6 Dias</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">Alegações Finais Escritas em Processo de Trabalho</div>
                   </div>
                 </div>
               </div>
@@ -564,12 +663,71 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </section>
 
-      {/* Security & Regulatory Section */}
-      <section id="seguranca" className="py-20 px-4 sm:px-8 bg-[#090E1A] border-b border-slate-800/60">
+      {/* Tradition & Scales of Justice Section (With Scales Photo) */}
+      <section className="relative py-24 px-4 sm:px-8 overflow-hidden border-b border-slate-800/80">
+        {/* Background Image: Classical Brass Scales of Justice and Law Library */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/justice_scales_books.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060911]/95 via-[#060911]/85 to-[#060911]/90 backdrop-blur-[2px]" />
+
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-8 space-y-4">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 bg-amber-950/80 border border-amber-800/50 px-3 py-1 rounded-full">
+                Tradição Forense & Sigilo Inviolável
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white font-serif leading-tight">
+                A dignidade da advocacia angolana protegida pela tecnologia certa.
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
+                O sigilo profissional do advogado é inviolável nos termos da Constituição e do Estatuto da OAA. O SIGEA foi concebido desde a raiz com segregação criptográfica entre escritórios, histórico imutável de acessos e respeito escrupuloso ao segredo de justiça.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 backdrop-blur-md">
+                  <div className="flex items-center gap-2 text-white font-semibold text-xs">
+                    <Shield className="w-4 h-4 text-emerald-400" />
+                    <span>Lei 22/11 (LPDP Angola)</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Tratamento de dados pessoais em conformidade estrita com a Agência de Proteção de Dados.</p>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 backdrop-blur-md">
+                  <div className="flex items-center gap-2 text-white font-semibold text-xs">
+                    <FileCheck className="w-4 h-4 text-blue-400" />
+                    <span>Validade Probatória</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Assinatura digital e rasto de auditoria de cada documento e peça processual submetida.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 p-6 rounded-2xl bg-slate-950/90 border border-slate-700/80 backdrop-blur-md shadow-2xl">
+              <Quote className="w-8 h-8 text-amber-400/40 mb-3" />
+              <p className="text-xs text-slate-300 italic leading-relaxed">
+                "O SIGEA transformou a forma como o nosso escritório gere o contencioso bancário e comercial em Luanda. Deixámos de correr riscos com prazos e os nossos clientes corporativos têm total clareza dos honorários."
+              </p>
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-blue-900/60 border border-blue-700/60 flex items-center justify-center text-xs font-bold text-blue-300">
+                  RF
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-white">Dr. Rui Falcão de Carvalho</div>
+                  <div className="text-[10px] text-amber-400/90 font-mono">Sócio Fundador • OAA 1420</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Security & Regulatory Cards */}
+      <section id="seguranca" className="py-20 px-4 sm:px-8 bg-[#090E19] border-b border-slate-800/80">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-blue-950 border border-blue-800/60 flex items-center justify-center mb-4">
                 <Lock className="w-5 h-5 text-blue-400" />
               </div>
               <h4 className="text-base font-bold text-white font-serif">Sigilo Profissional Absoluto</h4>
@@ -578,8 +736,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center mb-4">
+            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-emerald-950 border border-emerald-800/60 flex items-center justify-center mb-4">
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
               <h4 className="text-base font-bold text-white font-serif">Conformidade com a OAA</h4>
@@ -588,8 +746,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <div className="w-10 h-10 rounded-lg bg-amber-600/20 border border-amber-500/30 flex items-center justify-center mb-4">
+            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors">
+              <div className="w-10 h-10 rounded-lg bg-amber-950 border border-amber-800/60 flex items-center justify-center mb-4">
                 <FileCheck className="w-5 h-5 text-amber-400" />
               </div>
               <h4 className="text-base font-bold text-white font-serif">Auditoria & Rastreabilidade</h4>
@@ -601,19 +759,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </section>
 
-      {/* Call to action section */}
-      <section className="py-20 px-4 sm:px-8 border-b border-slate-800/60 relative overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+      {/* Call to Action Final Section */}
+      <section className="py-20 px-4 sm:px-8 border-b border-slate-800/80 bg-[#060911] text-center relative overflow-hidden">
+        <div className="max-w-3xl mx-auto relative z-10">
+          <div className="w-12 h-12 rounded-2xl bg-blue-950 border border-blue-800/60 flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <Scale className="w-6 h-6 text-blue-400" />
+          </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-serif">
             Experimente o SIGEA no seu escritório hoje.
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
             Aceda à demonstração interativa completa com dados reais simulados de processos em tribunais de Luanda e comprove a eficácia do sistema.
           </p>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={onEnterApp}
-              className="px-8 py-4 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-900/30 transition-all flex items-center gap-3 border border-blue-400/40 hover:scale-[1.02]"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-900/40 transition-all flex items-center justify-center gap-3 border border-blue-400/40 hover:scale-[1.02]"
             >
               <Scale className="w-5 h-5" />
               <span>Aceder Imediatamente à Plataforma SIGEA</span>
@@ -623,15 +784,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#05080F] py-12 px-4 sm:px-8 text-xs text-slate-500 border-t border-slate-900">
+      {/* Institutional Footer */}
+      <footer className="bg-[#04060C] py-12 px-4 sm:px-8 text-xs text-slate-500 border-t border-slate-900">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-blue-900/40 border border-blue-700/40 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-blue-950 border border-blue-800/60 flex items-center justify-center">
               <Scale className="w-4 h-4 text-blue-400" />
             </div>
             <div>
-              <span className="font-bold text-slate-300 font-serif">SIGEA</span>
+              <span className="font-bold text-slate-300 font-serif">SIGEA Angola</span>
               <span className="text-slate-600 ml-2">© 2026 Todos os direitos reservados. República de Angola.</span>
             </div>
           </div>
