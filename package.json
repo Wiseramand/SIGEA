@@ -1,0 +1,21 @@
+{
+  "name": "sigea-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SIGEA — Sistema Integrado de Gestão de Escritórios de Advocacia em Angola",
+  "scripts": {
+    "dev": "pnpm --filter @sigea/web dev",
+    "build": "pnpm --filter @sigea/shared build && pnpm --filter @sigea/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  },
+  "keywords": [
+    "legaltech",
+    "angola",
+    "law-firm-management",
+    "sigea"
+  ],
+  "author": "SIGEA Development Team",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.15.9"
+}
