@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserRole } from '@sigea/shared';
 import { NavigationTab } from './types';
 import { CasesProvider, useCases } from './context/CasesContext';
+import { canAccessTab, getDefaultTabForRole } from './utils/permissions';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { LandingPage } from './components/landing/LandingPage';
@@ -29,19 +30,11 @@ const AppContent: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
-  // Adapt tab when switching roles
+  // Adapt tab when switching roles with strict RBAC
   const handleRoleChange = (newRole: UserRole) => {
     setCurrentRole(newRole);
-    if (newRole === UserRole.CLIENT) {
-      setCurrentTab('portal');
-    } else if (newRole === UserRole.SUPER_ADMIN) {
-      setCurrentTab('superadmin');
-    } else if (newRole === UserRole.FINANCIAL) {
-      setCurrentTab('finance');
-    } else if (newRole === UserRole.INTERN) {
-      setCurrentTab('tasks');
-    } else if (currentTab === 'portal' || currentTab === 'superadmin') {
-      setCurrentTab('dashboard');
+    if (!canAccessTab(newRole, currentTab)) {
+      setCurrentTab(getDefaultTabForRole(newRole));
     }
   };
 
@@ -81,56 +74,70 @@ const AppContent: React.FC = () => {
 
         {/* Main Content Area: Own independent scroll container */}
         <main className="flex-1 h-full overflow-y-auto overflow-x-hidden min-h-0 bg-[#070B14]/80">
-          {currentTab === 'dashboard' && (
+          {currentTab === 'dashboard' && canAccessTab(currentRole, 'dashboard') && (
             <ExecutiveDashboard
+              currentRole={currentRole}
               onSelectCase={(caseId) => setSelectedCaseId(caseId)}
               onNavigateTab={(tab) => setCurrentTab(tab)}
             />
           )}
 
-          {currentTab === 'intelligence' && (
+          {currentTab === 'intelligence' && canAccessTab(currentRole, 'intelligence') && (
             <SigeaIntelligence
               onSelectCase={(caseId) => setSelectedCaseId(caseId)}
               onNavigateTab={(tab) => setCurrentTab(tab)}
             />
           )}
 
-          {currentTab === 'legal-ai' && (
+          {currentTab === 'legal-ai' && canAccessTab(currentRole, 'legal-ai') && (
             <SigeaLegalAi
               onSelectCase={(caseId) => setSelectedCaseId(caseId)}
             />
           )}
 
-          {currentTab === 'cases' && (
+          {currentTab === 'cases' && canAccessTab(currentRole, 'cases') && (
             <CasesList onSelectCase={(caseId) => setSelectedCaseId(caseId)} />
           )}
 
-          {currentTab === 'clients' && <ClientsList />}
+          {currentTab === 'clients' && canAccessTab(currentRole, 'clients') && (
+            <ClientsList />
+          )}
 
-          {currentTab === 'deadlines' && (
+          {currentTab === 'deadlines' && canAccessTab(currentRole, 'deadlines') && (
             <DeadlinesList onSelectCase={(caseId) => setSelectedCaseId(caseId)} />
           )}
 
-          {currentTab === 'tasks' && <TasksList />}
+          {currentTab === 'tasks' && canAccessTab(currentRole, 'tasks') && (
+            <TasksList />
+          )}
 
-          {currentTab === 'finance' && (
+          {currentTab === 'finance' && canAccessTab(currentRole, 'finance') && (
             <FinanceModule onSelectCase={(caseId) => setSelectedCaseId(caseId)} />
           )}
 
-          {currentTab === 'interns' && <InternsManagement />}
+          {currentTab === 'interns' && canAccessTab(currentRole, 'interns') && (
+            <InternsManagement />
+          )}
 
-          {currentTab === 'portal' && <ClientPortalView />}
+          {currentTab === 'portal' && canAccessTab(currentRole, 'portal') && (
+            <ClientPortalView />
+          )}
 
-          {currentTab === 'superadmin' && <SuperAdminView />}
+          {currentTab === 'superadmin' && canAccessTab(currentRole, 'superadmin') && (
+            <SuperAdminView />
+          )}
 
-          {currentTab === 'audit' && <AuditLogView />}
+          {currentTab === 'audit' && canAccessTab(currentRole, 'audit') && (
+            <AuditLogView />
+          )}
         </main>
       </div>
 
-      {/* Case Dossier 360 Modal */}
+      {/* Case Dossier 360 Modal with RBAC protection */}
       <CaseDossierModal
         legalCase={selectedCase}
         onClose={() => setSelectedCaseId(null)}
+        currentRole={currentRole}
       />
 
       {/* Global Command-K Search Modal */}

@@ -8,7 +8,11 @@ import {
   ExpenseItem,
   LegalParty,
   CaseStatus,
-  FeePaymentStatus
+  FeePaymentStatus,
+  Client,
+  Task,
+  TaskStatus,
+  DeadlineStatus
 } from '@sigea/shared';
 import {
   MOCK_CASES,
@@ -16,7 +20,9 @@ import {
   MOCK_DOCUMENTS,
   MOCK_ACTIVITIES,
   MOCK_FEES,
-  MOCK_EXPENSES
+  MOCK_EXPENSES,
+  MOCK_CLIENTS,
+  MOCK_TASKS
 } from '../data/mockData';
 
 interface ToastInfo {
@@ -32,6 +38,8 @@ interface CasesContextType {
   activities: CaseActivityItem[];
   fees: FeeItem[];
   expenses: ExpenseItem[];
+  clients: Client[];
+  tasks: Task[];
   toasts: ToastInfo[];
   showToast: (message: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
   dismissToast: (id: string) => void;
@@ -40,11 +48,15 @@ interface CasesContextType {
   addParty: (caseId: string, party: Omit<LegalParty, 'id'>) => void;
   addDocument: (doc: { caseId: string; title: string; category: LegalDocument['category']; isClientVisible: boolean; fileSize?: number; fileType?: string; uploadedByName?: string }) => void;
   addDeadline: (deadline: { caseId: string; title: string; dueDate: string; dueTime?: string; priority: Deadline['priority']; description?: string; assignedLawyerName?: string }) => void;
+  completeDeadline: (deadlineId: string) => void;
   addActivity: (activity: { caseId: string; title: string; description: string; authorName?: string; authorRole?: string; type?: CaseActivityItem['type'] }) => void;
   addPayment: (feeId: string, amountPaidAoa: number, receiptNumber?: string) => void;
   addFee: (fee: Omit<FeeItem, 'id' | 'organizationId'>) => void;
   addExpense: (expense: Omit<ExpenseItem, 'id' | 'organizationId'>) => void;
   markExpenseReimbursed: (expenseId: string) => void;
+  addClient: (clientData: Partial<Client>) => Client;
+  addTask: (taskData: Partial<Task>) => Task;
+  updateTaskStatus: (taskId: string, status: TaskStatus) => void;
   resetAllToMockData: () => void;
 }
 
@@ -56,7 +68,9 @@ const STORAGE_KEYS = {
   DOCUMENTS: 'sigea_documents_v1',
   ACTIVITIES: 'sigea_activities_v1',
   FEES: 'sigea_fees_v1',
-  EXPENSES: 'sigea_expenses_v1'
+  EXPENSES: 'sigea_expenses_v1',
+  CLIENTS: 'sigea_clients_v1',
+  TASKS: 'sigea_tasks_v1'
 };
 
 export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -114,6 +128,24 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   });
 
+  const [clients, setClients] = useState<Client[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.CLIENTS);
+      return saved ? JSON.parse(saved) : MOCK_CLIENTS;
+    } catch {
+      return MOCK_CLIENTS;
+    }
+  });
+
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.TASKS);
+      return saved ? JSON.parse(saved) : MOCK_TASKS;
+    } catch {
+      return MOCK_TASKS;
+    }
+  });
+
   const [toasts, setToasts] = useState<ToastInfo[]>([]);
 
   // Persist to local storage
@@ -125,10 +157,12 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(activities));
       localStorage.setItem(STORAGE_KEYS.FEES, JSON.stringify(fees));
       localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
+      localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(clients));
+      localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
     } catch (e) {
       console.warn('LocalStorage error:', e);
     }
-  }, [cases, deadlines, documents, activities, fees, expenses]);
+  }, [cases, deadlines, documents, activities, fees, expenses, clients, tasks]);
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     const id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6);
@@ -158,28 +192,27 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       parties: caseData.parties || [
         { id: 'p-' + Date.now(), name: caseData.clientName, role: 'CLAIMANT', lawyerName: caseData.responsibleLawyerName || 'Dr. Rui Falcão de Carvalho', oaaNumber: 'OAA 1420' }
       ],
-      judgeName: caseData.judgeName || 'A aguardar distribuição de juízo',
       distributionDate: caseData.distributionDate || new Date().toISOString().split('T')[0],
       claimValueAoa: caseData.claimValueAoa || 0,
-      provisionedValueAoa: caseData.provisionedValueAoa || caseData.claimValueAoa || 0,
+      provisionedValueAoa: caseData.provisionedValueAoa || 0,
       priority: caseData.priority || 'NORMAL',
-      section: caseData.section || 'Secção de Distribuição Cível',
-      teamMembers: caseData.teamMembers || [caseData.responsibleLawyerName || 'Dr. Rui Falcão de Carvalho'],
+      section: caseData.section || '1.ª Secção',
+      teamMembers: caseData.teamMembers || ['Dr. Rui Falcão de Carvalho', 'Dra. Kieza dos Santos Manuel'],
       isConfidential: Boolean(caseData.isConfidential),
-      description: caseData.description || 'Processo autuado via plataforma SIGEA Angola.',
+      description: caseData.description || 'Processo autuado no sistema SIGEA.',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
     setCases((prev) => [newCase, ...prev]);
 
-    // Registar entrada na timeline
+    // Regista atividade inicial
     addActivity({
       caseId: newCase.id,
-      title: 'Autuação e Distribuição do Processo',
-      description: `Processo autuado sob o nº ${newCase.caseNumber} no ${newCase.courtName}.`,
+      title: 'Processo Distribuído no Cartório',
+      description: `Processo ${newCase.caseNumber} autuado e registado perante o ${newCase.courtName}.`,
       authorName: newCase.responsibleLawyerName,
-      authorRole: 'Advogado Mandatário',
+      authorRole: 'Sócio Titular',
       type: 'STATUS_CHANGE'
     });
 
@@ -191,27 +224,13 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCases((prev) =>
       prev.map((c) => {
         if (c.id === caseId) {
-          const oldStatus = c.status;
           const updated = { ...c, ...updates, updatedAt: new Date().toISOString() };
-
-          // Se o estado mudou, adicionar ao histórico automaticamente
-          if (updates.status && updates.status !== oldStatus) {
-            addActivity({
-              caseId,
-              title: `Fase Processual Atualizada: ${updates.status}`,
-              description: `O processo transitou da fase de ${oldStatus} para a fase de ${updates.status}.`,
-              authorName: 'Secretaria Forense',
-              authorRole: 'Controlo Processual',
-              type: 'STATUS_CHANGE'
-            });
-          }
-
           return updated;
         }
         return c;
       })
     );
-    showToast('Dossier do processo atualizado com sucesso.', 'info');
+    showToast('Dados do processo atualizados com sucesso.', 'success');
   };
 
   const addParty = (caseId: string, party: Omit<LegalParty, 'id'>) => {
@@ -235,14 +254,14 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     addActivity({
       caseId,
-      title: `Nova Parte Registada: ${newParty.name}`,
-      description: `Parte adicionada na qualidade de ${newParty.role}. Mandatário: ${newParty.lawyerName || 'Sem mandatário constituído'}.`,
-      authorName: 'Dr. Rui Falcão de Carvalho',
-      authorRole: 'Advogado',
+      title: 'Nova Parte Registada',
+      description: `${newParty.name} adicionado(a) como ${newParty.role}.`,
+      authorName: 'Dr. Rui Falcão',
+      authorRole: 'Sócio',
       type: 'INTERNAL_NOTE'
     });
 
-    showToast(`Parte ${newParty.name} adicionada ao processo.`, 'success');
+    showToast(`Parte "${newParty.name}" associada ao processo com sucesso.`, 'success');
   };
 
   const addDocument = (doc: { caseId: string; title: string; category: LegalDocument['category']; isClientVisible: boolean; fileSize?: number; fileType?: string; uploadedByName?: string }) => {
@@ -252,8 +271,8 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       caseId: doc.caseId,
       title: doc.title,
       category: doc.category,
-      fileKey: `cases/${doc.caseId}/${doc.title.toLowerCase().replace(/\s+/g, '_')}`,
-      fileSize: doc.fileSize || 1250000,
+      fileKey: 'docs/' + Date.now() + '.pdf',
+      fileSize: doc.fileSize || 1024 * 450,
       fileType: doc.fileType || 'application/pdf',
       version: 1,
       uploadedById: 'user-01',
@@ -266,39 +285,39 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     addActivity({
       caseId: doc.caseId,
-      title: `Peça Processual Carregada: ${doc.title}`,
-      description: `Categoria: ${doc.category} • Visível no Portal do Cliente: ${doc.isClientVisible ? 'Sim' : 'Não'}.`,
+      title: 'Peça Processual Carregada',
+      description: `Documento "${newDoc.title}" (${newDoc.category}) indexado no dossier.`,
       authorName: newDoc.uploadedByName,
-      authorRole: 'Advogado',
+      authorRole: 'Mandatário',
       type: 'PETITION_FILED'
     });
 
-    showToast(`Documento "${doc.title}" anexado ao dossier.`, 'success');
+    showToast(`Documento "${newDoc.title}" anexado com sucesso.`, 'success');
   };
 
   const addDeadline = (deadline: { caseId: string; title: string; dueDate: string; dueTime?: string; priority: Deadline['priority']; description?: string; assignedLawyerName?: string }) => {
-    const theCase = cases.find((c) => c.id === deadline.caseId);
+    const associatedCase = cases.find((c) => c.id === deadline.caseId);
     
-    // Calcular dias restantes
+    // Calcula dias restantes aproximados
     const dueTime = new Date(deadline.dueDate).getTime();
-    const todayTime = new Date().setHours(0, 0, 0, 0);
-    const diffDays = Math.max(0, Math.ceil((dueTime - todayTime) / (1000 * 60 * 60 * 24)));
+    const nowTime = new Date().getTime();
+    const diffDays = Math.max(0, Math.ceil((dueTime - nowTime) / (1000 * 60 * 60 * 24)));
 
     const newDeadline: Deadline = {
       id: 'dl-' + Date.now(),
       organizationId: 'org-angola-001',
       caseId: deadline.caseId,
-      caseNumber: theCase?.caseNumber || '0000/26',
-      caseSubject: theCase?.subject || '',
+      caseNumber: associatedCase ? associatedCase.caseNumber : '0000/26',
+      caseSubject: associatedCase ? associatedCase.subject : 'Processo Judicial',
       title: deadline.title,
       dueDate: deadline.dueDate,
-      dueTime: deadline.dueTime || '15:00',
+      dueTime: deadline.dueTime || '15:30',
       priority: deadline.priority,
-      status: 'PENDING' as any,
-      alertLevel: diffDays <= 1 ? ('DAYS_1' as any) : diffDays <= 7 ? ('DAYS_7' as any) : ('DAYS_15' as any),
+      status: DeadlineStatus.PENDING,
+      alertLevel: diffDays <= 2 ? ('CRITICAL' as any) : ('WARNING' as any),
       assignedLawyerId: 'user-01',
       assignedLawyerName: deadline.assignedLawyerName || 'Dr. Rui Falcão de Carvalho',
-      description: deadline.description || 'Prazo judicial registado na agenda do processo.',
+      description: deadline.description || 'Cumprimento de prazo perentório fixado pelo Tribunal.',
       daysRemaining: diffDays
     };
 
@@ -306,25 +325,42 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     addActivity({
       caseId: deadline.caseId,
-      title: `Prazo Judicial Agendado: ${deadline.title}`,
-      description: `Data limite: ${deadline.dueDate} às ${newDeadline.dueTime} • Prioridade: ${deadline.priority}.`,
+      title: 'Prazo Perentório Registado',
+      description: `Fixado termo para ${newDeadline.dueDate} (${newDeadline.title}).`,
       authorName: newDeadline.assignedLawyerName,
-      authorRole: 'Responsável',
-      type: 'HEARING'
+      authorRole: 'Patrono',
+      type: 'JUDICIAL_NOTE'
     });
 
-    showToast(`Prazo registado para ${deadline.dueDate}!`, 'success');
+    showToast(`Prazo "${newDeadline.title}" registado na agenda com sucesso!`, 'success');
   };
 
-  const addActivity = (activity: { caseId: string; title: string; description: string; authorName?: string; authorRole?: string; type?: CaseActivityItem['type'] }) => {
+  const completeDeadline = (deadlineId: string) => {
+    setDeadlines((prev) =>
+      prev.map((d) => {
+        if (d.id === deadlineId) {
+          return {
+            ...d,
+            status: DeadlineStatus.COMPLETED,
+            completedAt: new Date().toISOString(),
+            daysRemaining: 0
+          };
+        }
+        return d;
+      })
+    );
+    showToast('Prazo processual marcado como cumprido perante o Tribunal.', 'success');
+  };
+
+  const addActivity = (act: { caseId: string; title: string; description: string; authorName?: string; authorRole?: string; type?: CaseActivityItem['type'] }) => {
     const newAct: CaseActivityItem = {
       id: 'act-' + Date.now(),
-      caseId: activity.caseId,
-      title: activity.title,
-      description: activity.description,
-      authorName: activity.authorName || 'Dr. Rui Falcão de Carvalho',
-      authorRole: activity.authorRole || 'Advogado Mandatário',
-      type: activity.type || 'JUDICIAL_NOTE',
+      caseId: act.caseId,
+      title: act.title,
+      description: act.description,
+      authorName: act.authorName || 'Dr. Rui Falcão',
+      authorRole: act.authorRole || 'Sócio Titular',
+      type: act.type || 'INTERNAL_NOTE',
       createdAt: new Date().toISOString()
     };
 
@@ -337,47 +373,130 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (f.id === feeId) {
           const newPaid = f.paidAmountAoa + amountPaidAoa;
           const newBalance = Math.max(0, f.amountAoa - newPaid);
-          const isFull = newBalance === 0;
+          const newStatus =
+            newBalance <= 0
+              ? FeePaymentStatus.PAID
+              : newPaid > 0
+              ? FeePaymentStatus.PARTIALLY_PAID
+              : f.status;
+
           return {
             ...f,
             paidAmountAoa: newPaid,
             balanceAoa: newBalance,
-            status: isFull ? FeePaymentStatus.PAID : FeePaymentStatus.PARTIALLY_PAID,
+            status: newStatus,
             paidDate: new Date().toISOString().split('T')[0],
-            receiptNumber: receiptNumber || `REC-${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`
+            receiptNumber: receiptNumber || `REC-2026/${Math.floor(1000 + Math.random() * 9000)}`
           };
         }
         return f;
       })
     );
-    showToast('Pagamento de honorário registado com sucesso!', 'success');
+
+    showToast(`Liquidação de ${amountPaidAoa.toLocaleString('pt-AO')} Kz registada com sucesso!`, 'success');
   };
 
   const addFee = (feeData: Omit<FeeItem, 'id' | 'organizationId'>) => {
     const newFee: FeeItem = {
       ...feeData,
       id: 'fee-' + Date.now(),
-      organizationId: 'org-angola-001'
+      organizationId: 'org-angola-001',
+      balanceAoa: Math.max(0, feeData.amountAoa - (feeData.paidAmountAoa || 0)),
+      status:
+        (feeData.paidAmountAoa || 0) >= feeData.amountAoa
+          ? FeePaymentStatus.PAID
+          : (feeData.paidAmountAoa || 0) > 0
+          ? FeePaymentStatus.PARTIALLY_PAID
+          : FeePaymentStatus.PENDING
     };
+
     setFees((prev) => [newFee, ...prev]);
-    showToast('Novo lançamento de honorários registado com sucesso!', 'success');
+    showToast(`Honorário de ${newFee.amountAoa.toLocaleString('pt-AO')} Kz emitido com sucesso!`, 'success');
   };
 
-  const addExpense = (expenseData: Omit<ExpenseItem, 'id' | 'organizationId'>) => {
+  const addExpense = (expData: Omit<ExpenseItem, 'id' | 'organizationId'>) => {
     const newExp: ExpenseItem = {
-      ...expenseData,
+      ...expData,
       id: 'exp-' + Date.now(),
       organizationId: 'org-angola-001'
     };
+
     setExpenses((prev) => [newExp, ...prev]);
-    showToast('Despesa processual registada com sucesso!', 'success');
+    showToast(`Despesa judicial de ${newExp.amountAoa.toLocaleString('pt-AO')} Kz registada.`, 'success');
   };
 
   const markExpenseReimbursed = (expenseId: string) => {
     setExpenses((prev) =>
-      prev.map((e) => (e.id === expenseId ? { ...e, isReimbursed: true } : e))
+      prev.map((e) => {
+        if (e.id === expenseId) {
+          return { ...e, isReimbursed: true, reimbursedDate: new Date().toISOString().split('T')[0] };
+        }
+        return e;
+      })
     );
     showToast('Despesa marcada como reembolsada pelo cliente.', 'info');
+  };
+
+  const addClient = (clientData: Partial<Client>) => {
+    const newClient: Client = {
+      id: 'client-' + Date.now(),
+      organizationId: 'org-angola-001',
+      type: clientData.type || ('COMPANY' as any),
+      name: clientData.name || 'Nova Entidade',
+      legalRepresentative: clientData.legalRepresentative || '',
+      nif: clientData.nif || '5418000000',
+      email: clientData.email || 'contacto@empresa.ao',
+      phone: clientData.phone || '+244 923 000 000',
+      address: clientData.address || 'Luanda, Angola',
+      city: clientData.city || 'Luanda',
+      province: clientData.province || 'Luanda',
+      status: ('ACTIVE' as any),
+      portalAccessEnabled: Boolean(clientData.portalAccessEnabled),
+      activeCasesCount: 0,
+      totalBilledAoa: 0,
+      createdAt: new Date().toISOString()
+    };
+
+    setClients((prev) => [newClient, ...prev]);
+    showToast(`Cliente "${newClient.name}" cadastrado com sucesso!`, 'success');
+    return newClient;
+  };
+
+  const addTask = (taskData: Partial<Task>) => {
+    const newTask: Task = {
+      id: 'task-' + Date.now(),
+      organizationId: 'org-angola-001',
+      title: taskData.title || 'Nova Diligência',
+      description: taskData.description || '',
+      status: taskData.status || TaskStatus.PENDING,
+      priority: taskData.priority || ('NORMAL' as any),
+      assignedToId: taskData.assignedToId || 'user-03',
+      assignedToName: taskData.assignedToName || 'Nzinga Luvumbo (Estagiário)',
+      createdById: 'user-01',
+      createdByName: 'Dr. Rui Falcão de Carvalho',
+      dueDate: taskData.dueDate || new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
+      createdAt: new Date().toISOString()
+    };
+
+    setTasks((prev) => [newTask, ...prev]);
+    showToast(`Tarefa "${newTask.title}" atribuída com sucesso!`, 'success');
+    return newTask;
+  };
+
+  const updateTaskStatus = (taskId: string, newStatus: TaskStatus) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          return {
+            ...t,
+            status: newStatus,
+            completedAt: newStatus === TaskStatus.COMPLETED ? new Date().toISOString() : undefined
+          };
+        }
+        return t;
+      })
+    );
+    showToast(`Estado da tarefa atualizado para: ${newStatus}`, 'info');
   };
 
   const resetAllToMockData = () => {
@@ -387,12 +506,16 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setActivities(MOCK_ACTIVITIES);
     setFees(MOCK_FEES);
     setExpenses(MOCK_EXPENSES);
+    setClients(MOCK_CLIENTS);
+    setTasks(MOCK_TASKS);
     localStorage.removeItem(STORAGE_KEYS.CASES);
     localStorage.removeItem(STORAGE_KEYS.DEADLINES);
     localStorage.removeItem(STORAGE_KEYS.DOCUMENTS);
     localStorage.removeItem(STORAGE_KEYS.ACTIVITIES);
     localStorage.removeItem(STORAGE_KEYS.FEES);
     localStorage.removeItem(STORAGE_KEYS.EXPENSES);
+    localStorage.removeItem(STORAGE_KEYS.CLIENTS);
+    localStorage.removeItem(STORAGE_KEYS.TASKS);
     showToast('Dados de demonstração repostos para os valores padrão.', 'info');
   };
 
@@ -405,6 +528,8 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         activities,
         fees,
         expenses,
+        clients,
+        tasks,
         toasts,
         showToast,
         dismissToast,
@@ -413,11 +538,15 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         addParty,
         addDocument,
         addDeadline,
+        completeDeadline,
         addActivity,
         addPayment,
         addFee,
         addExpense,
         markExpenseReimbursed,
+        addClient,
+        addTask,
+        updateTaskStatus,
         resetAllToMockData
       }}
     >
@@ -429,7 +558,7 @@ export const CasesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           <div
             key={t.id}
             onClick={() => dismissToast(t.id)}
-            className={`pointer-events-auto p-3.5 rounded-xl border shadow-xl flex items-center justify-between gap-3 text-xs font-semibold backdrop-blur-md transition-all animate-bounce ${
+            className={`pointer-events-auto p-3.5 rounded-xl border shadow-xl flex items-center justify-between gap-3 text-xs font-semibold backdrop-blur-md transition-all ${
               t.type === 'success'
                 ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200'
                 : t.type === 'error'

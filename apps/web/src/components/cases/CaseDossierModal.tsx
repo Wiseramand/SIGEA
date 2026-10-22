@@ -31,14 +31,19 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { canViewFees } from '../../utils/permissions';
+import { UserRole } from '@sigea/shared';
+
 interface CaseDossierModalProps {
   legalCase: LegalCase | null;
   onClose: () => void;
+  currentRole?: UserRole;
 }
 
 export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
   legalCase: initialCase,
-  onClose
+  onClose,
+  currentRole = UserRole.PARTNER
 }) => {
   const { cases, deadlines, documents, activities, fees, expenses, markExpenseReimbursed, addActivity, showToast } = useCases();
 
@@ -98,6 +103,44 @@ export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
 
     setNewNoteText('');
     showToast('Nota processual registada com sucesso no dossier.', 'success');
+  };
+
+  const handleDownloadDoc = (doc: any) => {
+    const content = `REPÚBLICA DE ANGOLA
+ORDEM DOS ADVOGADOS DE ANGOLA
+SIGEA — SISTEMA INTEGRADO DE GESTÃO ESTRATÉGICA DA ADVOCACIA
+======================================================================
+PEÇA PROCESSUAL / DOCUMENTO DIGITAL FORENSE
+======================================================================
+Título: ${doc.title}
+Processo Judicial nº: ${currentCase.caseNumber}
+Tribunal / Jurisdição: ${currentCase.courtName} — ${currentCase.jurisdiction}
+Cliente / Requerente: ${currentCase.clientName}
+Mandatário Forense: ${currentCase.responsibleLawyerName}
+Data de Registo: ${new Date(doc.createdAt).toLocaleDateString('pt-AO')}
+Categoria: ${doc.category}
+Versão do Documento: ${doc.version}
+Visibilidade no Portal do Cliente: ${doc.isClientVisible ? 'Sim' : 'Não'}
+Tamanho: ${(doc.fileSize / 1024).toFixed(1)} KB
+Hash SHA-256 de Autenticidade: ${doc.hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
+======================================================================
+SUMÁRIO FORENSE DA PEÇA:
+Este documento constitui peça integrante dos autos sob a epígrafe
+acima referida, devidamente registada no arquivo digital da sociedade.
+Todos os articulados e minutas foram lavrados em conformidade com o
+Código de Processo Civil e a legislação conexa da República de Angola.
+======================================================================
+`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${doc.title.replace(/[/\\?%*:|"<>]/g, '_')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`Download da peça "${doc.title}" concluído com sucesso`, 'success');
   };
 
   return (
@@ -224,17 +267,19 @@ export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
               <span>4. Agenda & Prazos ({caseDeadlines.length})</span>
             </button>
 
-            <button
-              onClick={() => setActiveTab('finance')}
-              className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'finance'
-                  ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <BadgeDollarSign className="w-3.5 h-3.5" />
-              <span>5. Honorários & Pagamentos ({caseFees.length})</span>
-            </button>
+            {canViewFees(currentRole) && (
+              <button
+                onClick={() => setActiveTab('finance')}
+                className={`py-3 px-4 text-xs font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+                  activeTab === 'finance'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <BadgeDollarSign className="w-3.5 h-3.5" />
+                <span>5. Honorários & Pagamentos ({caseFees.length})</span>
+              </button>
+            )}
 
             <button
               onClick={() => setActiveTab('history')}
@@ -462,7 +507,7 @@ export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
                         </div>
 
                         <button
-                          onClick={() => showToast(`Download demonstrativo iniciado: ${doc.title}`, 'info')}
+                          onClick={() => handleDownloadDoc(doc)}
                           className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700 transition-colors"
                           title="Descarregar ficheiro"
                         >
@@ -533,6 +578,17 @@ export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
 
             {/* SEPARADOR 5: HONORÁRIOS & RENTABILIDADE */}
             {activeTab === 'finance' && (
+              !canViewFees(currentRole) ? (
+                <div className="text-center py-16 space-y-3">
+                  <div className="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-800/60 flex items-center justify-center mx-auto text-amber-400">
+                    <Lock className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-white font-serif">Acesso Restrito a Sócios e Direção Financeira</h3>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                    Os termos contratuais de honorários, pagamentos e a rentabilidade deste processo estão sob sigilo funcional e reservados a Sócios (OAA) e à Direção Financeira.
+                  </p>
+                </div>
+              ) : (
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
@@ -708,6 +764,7 @@ export const CaseDossierModal: React.FC<CaseDossierModalProps> = ({
                   )}
                 </div>
               </div>
+              )
             )}
 
             {/* SEPARADOR 6: HISTÓRICO & NOTAS */}

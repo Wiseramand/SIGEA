@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserRole } from '@sigea/shared';
 import { NavigationTab } from '../../types';
+import { canAccessTab } from '../../utils/permissions';
 import {
   LayoutDashboard,
   Sparkles,
@@ -150,137 +151,178 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   }
 
+  // Permission flags for standard law firm profiles
+  const hasDashboard = canAccessTab(currentRole, 'dashboard');
+  const hasIntelligence = canAccessTab(currentRole, 'intelligence');
+  const hasLegalAi = canAccessTab(currentRole, 'legal-ai');
+  const hasDeadlines = canAccessTab(currentRole, 'deadlines');
+  const hasTasks = canAccessTab(currentRole, 'tasks');
+  const hasCases = canAccessTab(currentRole, 'cases');
+  const hasClients = canAccessTab(currentRole, 'clients');
+  const hasInterns = canAccessTab(currentRole, 'interns');
+  const hasFinance = canAccessTab(currentRole, 'finance');
+  const hasAudit = canAccessTab(currentRole, 'audit');
+
   // Standard Law Firm Team navigation (Partners, Lawyers, Interns, Finance)
   return (
     <aside className="w-64 h-full shrink-0 bg-[#0B0F19] border-r border-slate-800/80 flex flex-col justify-between p-4 select-none overflow-y-auto">
       <div className="space-y-6">
-        {/* Group: Principal */}
-        <div>
-          <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
-            Gestão & Inteligência
+        {/* Group: Principal / Gestão */}
+        {(hasDashboard || hasIntelligence || hasLegalAi || hasDeadlines || hasTasks) && (
+          <div>
+            <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Gestão & Operação
+            </div>
+            <nav className="space-y-1">
+              {hasDashboard && (
+                <button
+                  onClick={() => onSelectTab('dashboard')}
+                  className={getNavClass(currentTab === 'dashboard')}
+                >
+                  <LayoutDashboard className="w-4 h-4 text-blue-400" />
+                  <span>Painel Executivo</span>
+                </button>
+              )}
+
+              {hasIntelligence && (
+                <button
+                  onClick={() => onSelectTab('intelligence')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
+                    currentTab === 'intelligence'
+                      ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-850/60 font-medium'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-blue-400" />
+                    <span>SIGEA Intelligence</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/50 uppercase tracking-wider">
+                    Executivo
+                  </span>
+                </button>
+              )}
+
+              {hasLegalAi && (
+                <button
+                  onClick={() => onSelectTab('legal-ai')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
+                    currentTab === 'legal-ai'
+                      ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-850/60 font-medium'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Bot className="w-4 h-4 text-indigo-400" />
+                    <span>SIGEA Legal AI</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 uppercase tracking-wider">
+                    Assistente
+                  </span>
+                </button>
+              )}
+
+              {hasDeadlines && (
+                <button
+                  onClick={() => onSelectTab('deadlines')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
+                    currentTab === 'deadlines'
+                      ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850/60 font-medium'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-4 h-4 text-amber-400" />
+                    <span>Prazos Judiciais</span>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-950/40 text-amber-300 border border-amber-800/40">
+                    1 urgente
+                  </span>
+                </button>
+              )}
+
+              {hasTasks && (
+                <button
+                  onClick={() => onSelectTab('tasks')}
+                  className={getNavClass(currentTab === 'tasks')}
+                >
+                  <CheckSquare className="w-4 h-4 text-slate-400" />
+                  <span>Minhas Tarefas</span>
+                </button>
+              )}
+            </nav>
           </div>
-          <nav className="space-y-1">
-            <button
-              onClick={() => onSelectTab('dashboard')}
-              className={getNavClass(currentTab === 'dashboard')}
-            >
-              <LayoutDashboard className="w-4 h-4 text-blue-400" />
-              <span>Painel Executivo</span>
-            </button>
-
-            <button
-              onClick={() => onSelectTab('intelligence')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
-                currentTab === 'intelligence'
-                  ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-850/60 font-medium'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-4 h-4 text-blue-400" />
-                <span>SIGEA Intelligence</span>
-              </div>
-              <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-800/50 uppercase tracking-wider">
-                Executivo
-              </span>
-            </button>
-
-            <button
-              onClick={() => onSelectTab('legal-ai')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
-                currentTab === 'legal-ai'
-                  ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-850/60 font-medium'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Bot className="w-4 h-4 text-indigo-400" />
-                <span>SIGEA Legal AI</span>
-              </div>
-              <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 uppercase tracking-wider">
-                Assistente
-              </span>
-            </button>
-
-            <button
-              onClick={() => onSelectTab('deadlines')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs transition-all ${
-                currentTab === 'deadlines'
-                  ? 'bg-slate-800/95 text-white font-semibold border border-slate-700/80 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850/60 font-medium'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span>Prazos Judiciais</span>
-              </div>
-              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-950/40 text-amber-300 border border-amber-800/40">
-                1 urgente
-              </span>
-            </button>
-
-            <button
-              onClick={() => onSelectTab('tasks')}
-              className={getNavClass(currentTab === 'tasks')}
-            >
-              <CheckSquare className="w-4 h-4 text-slate-400" />
-              <span>Minhas Tarefas</span>
-            </button>
-          </nav>
-        </div>
+        )}
 
         {/* Group: Prática Jurídica */}
-        <div>
-          <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
-            Prática Jurídica
-          </div>
-          <nav className="space-y-1">
-            <button
-              onClick={() => onSelectTab('cases')}
-              className={getNavClass(currentTab === 'cases')}
-            >
-              <Briefcase className="w-4 h-4 text-blue-400" />
-              <span>Processos & Dossiers</span>
-            </button>
-            <button
-              onClick={() => onSelectTab('clients')}
-              className={getNavClass(currentTab === 'clients')}
-            >
-              <Users className="w-4 h-4 text-slate-400" />
-              <span>Clientes & Entidades</span>
-            </button>
-            <button
-              onClick={() => onSelectTab('interns')}
-              className={getNavClass(currentTab === 'interns')}
-            >
-              <GraduationCap className="w-4 h-4 text-emerald-400" />
-              <span>Estágios OAA</span>
-            </button>
-          </nav>
-        </div>
+        {(hasCases || hasClients || hasInterns) && (
+          <div>
+            <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Prática Jurídica
+            </div>
+            <nav className="space-y-1">
+              {hasCases && (
+                <button
+                  onClick={() => onSelectTab('cases')}
+                  className={getNavClass(currentTab === 'cases')}
+                >
+                  <Briefcase className="w-4 h-4 text-blue-400" />
+                  <span>Processos & Dossiers</span>
+                </button>
+              )}
 
-        {/* Group: Finanças & Auditoria */}
-        <div>
-          <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
-            Finanças & Conformidade
+              {hasClients && (
+                <button
+                  onClick={() => onSelectTab('clients')}
+                  className={getNavClass(currentTab === 'clients')}
+                >
+                  <Users className="w-4 h-4 text-slate-400" />
+                  <span>Clientes & Entidades</span>
+                </button>
+              )}
+
+              {hasInterns && (
+                <button
+                  onClick={() => onSelectTab('interns')}
+                  className={getNavClass(currentTab === 'interns')}
+                >
+                  <GraduationCap className="w-4 h-4 text-emerald-400" />
+                  <span>Estágios OAA</span>
+                </button>
+              )}
+            </nav>
           </div>
-          <nav className="space-y-1">
-            <button
-              onClick={() => onSelectTab('finance')}
-              className={getNavClass(currentTab === 'finance')}
-            >
-              <BadgeDollarSign className="w-4 h-4 text-emerald-400" />
-              <span>Honorários em AOA</span>
-            </button>
-            <button
-              onClick={() => onSelectTab('audit')}
-              className={getNavClass(currentTab === 'audit')}
-            >
-              <ShieldAlert className="w-4 h-4 text-slate-400" />
-              <span>Trilha de Auditoria</span>
-            </button>
-          </nav>
-        </div>
+        )}
+
+        {/* Group: Finanças & Conformidade (Apenas para perfis autorizados como Sócios e Direção Financeira) */}
+        {(hasFinance || hasAudit) && (
+          <div>
+            <div className="px-3 text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Finanças & Conformidade
+            </div>
+            <nav className="space-y-1">
+              {hasFinance && (
+                <button
+                  onClick={() => onSelectTab('finance')}
+                  className={getNavClass(currentTab === 'finance')}
+                >
+                  <BadgeDollarSign className="w-4 h-4 text-emerald-400" />
+                  <span>Honorários em AOA</span>
+                </button>
+              )}
+
+              {hasAudit && (
+                <button
+                  onClick={() => onSelectTab('audit')}
+                  className={getNavClass(currentTab === 'audit')}
+                >
+                  <ShieldAlert className="w-4 h-4 text-slate-400" />
+                  <span>Trilha de Auditoria</span>
+                </button>
+              )}
+            </nav>
+          </div>
+        )}
       </div>
 
       {/* Footer links: Landing Page & Client Portal */}
@@ -298,16 +340,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         )}
 
-        <button
-          onClick={() => onSelectTab('portal')}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/40 hover:bg-slate-800/70 text-xs text-slate-400 hover:text-slate-200 border border-slate-800/60 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <FileText className="w-3.5 h-3.5 text-blue-400" />
-            <span>Ver Portal do Cliente</span>
-          </div>
-          <ExternalLink className="w-3 h-3 text-slate-500" />
-        </button>
+        {currentRole !== UserRole.INTERN && (
+          <button
+            onClick={() => onSelectTab('portal')}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/40 hover:bg-slate-800/70 text-xs text-slate-400 hover:text-slate-200 border border-slate-800/60 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-3.5 h-3.5 text-blue-400" />
+              <span>Ver Portal do Cliente</span>
+            </div>
+            <ExternalLink className="w-3 h-3 text-slate-500" />
+          </button>
+        )}
       </div>
     </aside>
   );
